@@ -11,6 +11,8 @@ source $HOME/.config/nvim/status-bar.vim
   set shiftwidth=2
   set expandtab
 
+  let g:netrw_liststyle = 3
+
   set foldmethod=marker
   set foldmarker={{{,}}}
 

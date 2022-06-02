@@ -4,8 +4,12 @@ set statusline=
 "set statusline+=\ ascii:\ %b\ hex:\ 0x%B\ row:\ %l\ col:\ %c\ percent:\ %p%%
 
 set statusline+=%1*%{CurrentMode()}
-set statusline+=%2*%{CurrentGitBranch()}
+set statusline+=%3*\ 
+set statusline+=%2*%f\ git:%{CurrentGitBranch()}\ %m
+set statusline+=%3*\ 
+set statusline+=%2*Ln\ %l,\ Col\ %c
 set statusline+=%3*
+
 
 " current mode
 function! CurrentMode()
@@ -44,7 +48,7 @@ endfunction
 " set statusline colors
 function! StatuslineColors()
   autocmd VimEnter,ColorScheme * hi User1 guifg=black guibg=lightgreen
-  autocmd VimEnter,ColorScheme * hi User2 guifg=white guibg=purple
+  autocmd VimEnter,ColorScheme * hi User2 guifg=white guibg=gray23
   autocmd VimEnter,ColorScheme * hi User3 guifg=white guibg=black
 endfunction
 
