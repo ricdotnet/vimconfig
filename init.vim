@@ -1,7 +1,7 @@
-source $HOME/.config/nvim/auto-complete.vim
 source $HOME/.config/nvim/mappings.vim
 source $HOME/.config/nvim/plugins.vim
 source $HOME/.config/nvim/status-bar.vim
+
 
 " {{{
   set number
@@ -23,6 +23,9 @@ source $HOME/.config/nvim/status-bar.vim
 
   let g:material_style = "deep ocean"
   colorscheme material
+  
+  set completeopt=menu,menuone,noselect
 
 " }}}
 
+luafile $HOME/.config/nvim/auto-complete.lua

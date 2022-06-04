@@ -5,9 +5,14 @@ set statusline=
 
 set statusline+=%1*%{CurrentMode()}
 set statusline+=%3*\ 
-set statusline+=%2*%f\ git:%{CurrentGitBranch()}\ %m
+set statusline+=%2*%F\ git:%{CurrentGitBranch()}\ %m
 set statusline+=%3*\ 
+set statusline+=%= " align right
+set statusline+=%y " file type
+set statusline+=\ 
 set statusline+=%2*Ln\ %l,\ Col\ %c
+set statusline+=,\ 
+set statusline+=Char\ %b
 set statusline+=%3*
 
 
