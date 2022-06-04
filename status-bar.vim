@@ -29,6 +29,8 @@ function! CurrentMode()
     return "VISUAL"
   elseif l:mode=="c"
     return "COMMAND"
+  elseif l:mode=="t"
+    return "TERMINAL"
   endif
   "return l:mode
 endfunction
