@@ -21,9 +21,12 @@ source $HOME/.config/nvim/status-bar.vim
   endif
   syntax enable
 
-  let g:material_style = "deep ocean"
-  colorscheme material
-  
+  " let g:material_style = "deep ocean"
+  " colorscheme material
+  let g:gruvbox_termcolors = "16"
+  let g:gruvbox_contrast_dark = "hard"
+  colorscheme gruvbox
+
   set completeopt=menu,menuone,noselect
 
 " }}}

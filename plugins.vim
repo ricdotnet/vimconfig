@@ -1,6 +1,7 @@
 call plug#begin()
 
-  Plug 'marko-cerovac/material.nvim'
+  " Plug 'marko-cerovac/material.nvim'
+  Plug 'morhetz/gruvbox'
 
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
