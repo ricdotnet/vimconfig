@@ -7,14 +7,19 @@ source $HOME/.config/nvim/status-bar.vim
   set number
   set relativenumber
 
-  set tabstop=2
+  set breakindent
+  set breakindentopt=shift:4
+  set tabstop=4
   set shiftwidth=2
   set expandtab
+  set colorcolumn=80
 
   let g:netrw_liststyle = 3
 
   set foldmethod=marker
   set foldmarker={{{,}}}
+
+  set wrap
 
   if (has("termguicolors"))
     set termguicolors
