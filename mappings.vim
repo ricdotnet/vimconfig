@@ -13,7 +13,6 @@ let mapleader = '.'
 nnoremap <Leader>ff :Telescope find_files<Enter>
 tnoremap <Esc> <C-\><C-n>
 
-" key mappings
 nnoremap <Leader>ss :w<Enter>
 
 " move lines mappings
@@ -27,8 +26,6 @@ tnoremap <A-Down> :m '>+1<CR>gv=gv
 " duplicate lines
 nnoremap <S-d> 0v$y<ESC><CR>P
 "inoremap <S-d> <ESC>0v$y<ESC><CR>P
-
-
 
 " reload configs
 nnoremap <leader>sv :source $MYVIMRC<CR>
