@@ -26,7 +26,7 @@ tnoremap <A-Down> :m '>+1<CR>gv=gv
 
 " duplicate lines
 nnoremap <S-d> 0v$y<ESC><CR>P
-inoremap <S-d> <ESC>0v$y<ESC><CR>P
+"inoremap <S-d> <ESC>0v$y<ESC><CR>P
 
 
 
