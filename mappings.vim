@@ -15,9 +15,6 @@ tnoremap <Esc> <C-\><C-n>
 
 nnoremap <Leader>ss :w<Enter>
 
-" comment lines
-nnoremap <C-_> <Esc>:call CommentLine()<Enter>
-
 " move lines mappings
 nnoremap <A-Up> :m .-2<CR>==
 nnoremap <A-Down> :m .+1<CR>==
@@ -26,6 +23,9 @@ inoremap <A-Down> <Esc>:m .+1<CR>==gi
 tnoremap <A-Up> :m '<-2<CR>gv=gv
 tnoremap <A-Down> :m '>+1<CR>gv=gv
 
-function CommentLine()
-  echom "commented..."
-endfunction
+" duplicate lines
+nnoremap <S-d> 0v$y<ESC><CR>P
+"inoremap <S-d> <ESC>0v$y<ESC><CR>P
+
+" reload configs
+nnoremap <leader>sv :source $MYVIMRC<CR>
