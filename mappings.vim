@@ -13,8 +13,10 @@ let mapleader = '.'
 nnoremap <Leader>ff :Telescope find_files<Enter>
 tnoremap <Esc> <C-\><C-n>
 
-" key mappings
 nnoremap <Leader>ss :w<Enter>
+
+" comment lines
+nnoremap <C-_> <Esc>:call CommentLine()<Enter>
 
 " move lines mappings
 nnoremap <A-Up> :m .-2<CR>==
@@ -24,4 +26,6 @@ inoremap <A-Down> <Esc>:m .+1<CR>==gi
 tnoremap <A-Up> :m '<-2<CR>gv=gv
 tnoremap <A-Down> :m '>+1<CR>gv=gv
 
-" duplicate line
+function CommentLine()
+  echom "commented..."
+endfunction

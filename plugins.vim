@@ -3,13 +3,15 @@ call plug#begin()
   " Plug 'marko-cerovac/material.nvim'
   Plug 'morhetz/gruvbox'
 
+  Plug 'jiangmiao/auto-pairs'
+
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
   Plug 'kyazdani42/nvim-web-devicons'
-
+  
   Plug 'neovim/nvim-lspconfig'
-
+  
   Plug 'hrsh7th/cmp-nvim-lsp'
   Plug 'hrsh7th/cmp-buffer'
   Plug 'hrsh7th/cmp-path'

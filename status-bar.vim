@@ -15,7 +15,6 @@ set statusline+=,\
 set statusline+=Char\ %b
 set statusline+=%3*
 
-
 " current mode
 function! CurrentMode()
   let l:mode=mode()
