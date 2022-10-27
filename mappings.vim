@@ -24,4 +24,11 @@ inoremap <A-Down> <Esc>:m .+1<CR>==gi
 tnoremap <A-Up> :m '<-2<CR>gv=gv
 tnoremap <A-Down> :m '>+1<CR>gv=gv
 
-" duplicate line
+" duplicate lines
+nnoremap <S-d> 0v$y<ESC><CR>P
+inoremap <S-d> <ESC>0v$y<ESC><CR>P
+
+
+
+" reload configs
+nnoremap <leader>sv :source $MYVIMRC<CR>
