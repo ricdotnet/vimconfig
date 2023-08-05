@@ -15,3 +15,7 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
 vim.opt.tw = 120
+
+-- theme options
+vim.opt.background = dark
+vim.cmd.colorscheme "midnight"
