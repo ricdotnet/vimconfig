@@ -39,5 +39,6 @@ lazy.setup({
   { "L3MON4D3/LuaSnip" },
   { "rafamadriz/friendly-snippets" },
   { "ray-x/lsp_signature.nvim" },
-  { "windwp/nvim-autopairs", event = "InsertEnter", opts = {} }
+  { "windwp/nvim-autopairs", event = "InsertEnter", opts = {} },
+  { "ellisonleao/gruvbox.nvim", priority = 1000 }
 })
