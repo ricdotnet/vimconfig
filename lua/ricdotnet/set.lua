@@ -1,21 +1,19 @@
+local set = vim.opt
+
 -- some options
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
+set.tabstop = 2
+set.shiftwidth = 2
+set.expandtab = true
 
-vim.opt.wrap = true
-vim.opt.breakindent = true
+set.wrap = true
+set.breakindent = true
 
-vim.opt.number = true
-vim.opt.relativenumber = true
+set.number = true
+set.relativenumber = true
 
-vim.opt.hlsearch = false
+set.hlsearch = false
 
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
+set.ignorecase = true
+set.smartcase = true
 
-vim.opt.tw = 120
-
--- theme options
---vim.opt.background = dark
---vim.cmd.colorscheme "midnight"
+set.tw = 120
