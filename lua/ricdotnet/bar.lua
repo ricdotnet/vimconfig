@@ -2,16 +2,35 @@ local set = vim.opt
 local api = vim.api
 
 local colors = {
-  white_bg = "#FFFFFF",
-  black_bg = "#000000",
+  light = "#fbf1c7",
+  dark = "#1d2021",
   
-  purple = "#bd93f9",
-  blue = "#8be9fd",
-  yellow = "#f1fa8c",
-  green = "#50fa7b",
-  red = "#ff5555",
+  blue_d = "#458588",
+  blue_l = "#83a598",
 
+  yellow_d = "#d79921",
+  yellow_l = "#fabd2f",
+
+  purple_d = "#b16286",
+  purple_l = "#d3869b",
+
+  red_d = "#cc241d",
+  red_l = "#fb4934",
+
+  green_d = "#98971a",
+  green_l = "#b8bb26",
+
+  orange_d = "#d65d0e",
+  orange_l = "#fe8019",
+}
+
+local chars = {
   blank = " ",
+
+  left = "░▒▓",
+  right = "▓▒░",
+
+  happy = "",
 }
 
 local function getMode()
@@ -29,7 +48,7 @@ local function getMode()
   if modes[mode] then
     return modes[mode]
   else
-    return "no mode"
+    return "🇴🇹🇭🇪🇷"
   end
 end
 
@@ -61,20 +80,64 @@ StatusLine.setup = function()
 
   -- set bar colors
   api.nvim_command("hi Reset gui=bold")
-  api.nvim_command("hi Mode guibg=" .. colors["purple"] .. " guifg=" .. colors["white_bg"] .. " gui=bold")
+  
+  api.nvim_command("hi LeftSeparatorPurple guifg=" .. colors["purple_d"])
+  api.nvim_command("hi RightReparatorPurple guifg=" .. colors["purple_d"])
+  api.nvim_command("hi LeftSeparatorYellow guifg=" .. colors["yellow_d"])
+  api.nvim_command("hi RightReparatorYellow guifg=" .. colors["yellow_d"])
+  
+  api.nvim_command("hi Mode guibg=" .. colors["purple_d"] .. " guifg=" .. colors["light"] .. " gui=bold")
+  api.nvim_command("hi LineColumn guibg=" .. colors["yellow_d"] .. " guifg=" .. colors["light"] .. " gui=bold")
 
   -- build the line
-  local statusline = ""
-  statusline = statusline .. "%#Mode#" .. getMode() .. "%#Reset#"
+  local statusline = {
+    "%#Reset#",
 
-  statusline = statusline .. "%= Ln: " .. getLine() .. " :: Col: " .. getCol()
+    -- left side
+    chars["blank"],
 
-  return statusline
+    -- mode styling
+    "%#LeftSeparatorPurple#",
+    chars["left"],
+    "%#Mode#",
+    chars["blank"],
+    getMode(),
+    chars["blank"],
+    "%#Reset#",
+    "%#RightReparatorPurple#",
+    chars["right"],
+    "%#Reset#",
+
+    -- right side
+    "%=",
+
+    -- line and column
+    "%#LeftSeparatorYellow#",
+    chars["left"],
+    "%#LineColumn#",
+    chars["blank"],
+    "L:",
+    chars["blank"],
+    getLine(),
+    chars["blank"],
+    "C:",
+    chars["blank"],
+    getCol(),
+    chars["blank"],
+    "%#Reset#",
+    "%#RightReparatorYellow#",
+    chars["right"],
+    
+    -- last space
+    chars["blank"],
+  }
+
+  return table.concat(statusline)
 end
 
 vim.api.nvim_exec([[
   augroup Statusline
-  autocmd!
-  autocmd VimEnter,BufEnter * setlocal statusline=%!v:lua.StatusLine.setup()
+    autocmd!
+    autocmd VimEnter,BufEnter * setlocal statusline=%!v:lua.StatusLine.setup()
   augroup END
 ]], false)
