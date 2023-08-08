@@ -10,11 +10,53 @@ local colors = {
   yellow = "#f1fa8c",
   green = "#50fa7b",
   red = "#ff5555",
-  
+
   blank = " ",
 }
 
-function setup()
+local function getMode()
+  local mode = api.nvim_get_mode().mode
+
+  local modes = {
+    v = "VISUAL",
+    n = "NORMAL",
+    i = "INSERT",
+    c = "COMMAND",
+    t = "TERMINAL",
+    R = "REPLACE MULTI",
+  }
+
+  if modes[mode] then
+    return modes[mode]
+  else
+    return "no mode"
+  end
+end
+
+local function getLine()
+  return api.nvim_call_function('line', {"."})
+end
+
+local function getCol()
+  return api.nvim_call_function('col', {"."})
+end
+
+local function setGitBranch()
+  local branch = io.popen([[git rev-parse --abbrev-ref HEAD 2> /dev/null]])
+  local name = branch:read("*a")
+  branch:close()
+
+  if name then
+    return name
+  else
+    return "N/B"
+  end
+end
+
+-- BUILD THE LINE --
+StatusLine = {}
+
+StatusLine.setup = function()
   set.laststatus = 2
 
   -- set bar colors
@@ -30,52 +72,9 @@ function setup()
   return statusline
 end
 
-function getMode()
-  local mode = api.nvim_get_mode().mode
-
-  local modes = {
-    v = "VISUAL",
-    n = "NORMAL",
-    i = "INSERT",
-    c = "COMMAND",
-    t = "TERMINAL",
-    R = "REPLACE MULTI",
-  }
-
-  if modes[mode] then
-    return modes[mode]
-  else
-    return mode
-  end
-end
-
-function getLine()
-  return api.nvim_call_function('line', {"."})
-end
-
-function getCol()
-  return api.nvim_call_function('col', {"."})
-end
-
-function setGitBranch()
-  local branch = io.popen([[git rev-parse --abbrev-ref HEAD 2> /dev/null]])
-  local name = branch:read("*a")
-  branch:close()
-
-  if name then
-    return name
-  else
-    return "N/B"
-  end
-end
-
-api.nvim_create_augroup("StatusLine", { clear = true })
-api.nvim_create_autocmd({
-	"WinEnter",
-	"BufEnter",
-  "*"
-}, {
-	callback = function()
-		set.statusline = setup()
-	end
-})
+vim.api.nvim_exec([[
+  augroup Statusline
+  autocmd!
+  autocmd VimEnter,BufEnter * setlocal statusline=%!v:lua.StatusLine.setup()
+  augroup END
+]], false)

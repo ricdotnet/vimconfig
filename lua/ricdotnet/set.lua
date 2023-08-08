@@ -1,4 +1,5 @@
 local set = vim.opt
+local cmd = vim.cmd
 
 -- some options
 set.tabstop = 2
@@ -17,3 +18,6 @@ set.ignorecase = true
 set.smartcase = true
 
 set.tw = 120
+
+-- set commands
+cmd [[set noshowmode]]

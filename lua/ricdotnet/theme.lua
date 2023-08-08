@@ -1,3 +1,5 @@
+local cmd = vim.cmd
+
 require("gruvbox").setup({
   undercurl = true,
   underline = true,
@@ -21,5 +23,5 @@ require("gruvbox").setup({
   transparent_mode = false,
 })
 
-vim.cmd.background = dark
-vim.cmd([[colorscheme gruvbox]])
+cmd.background = dark
+cmd.colorscheme "gruvbox"
