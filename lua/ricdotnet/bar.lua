@@ -1,20 +1,36 @@
 local set = vim.opt
 local api = vim.api
 
+local colors = {
+  white_bg = "#FFFFFF",
+  black_bg = "#000000",
+  
+  purple = "#bd93f9",
+  blue = "#8be9fd",
+  yellow = "#f1fa8c",
+  green = "#50fa7b",
+  red = "#ff5555",
+  
+  blank = " ",
+}
+
 function setup()
   set.laststatus = 2
 
-  -- a table to then join I guess
-  local lineParts = {
-    setMode(),
-    --setGitBranch(),
-  }
+  -- set bar colors
+  api.nvim_command("hi Reset gui=bold")
+  api.nvim_command("hi Mode guibg=" .. colors["purple"] .. " guifg=" .. colors["white_bg"] .. " gui=bold")
 
-  -- set.statusline = setGitBranch() .. " - MODE: " .. setMode()
-  set.statusline = "MODE: " .. setMode()
+  -- build the line
+  local statusline = ""
+  statusline = statusline .. "%#Mode#" .. getMode() .. "%#Reset#"
+
+  statusline = statusline .. "%= Ln: " .. getLine() .. " :: Col: " .. getCol()
+
+  return statusline
 end
 
-function setMode()
+function getMode()
   local mode = api.nvim_get_mode().mode
 
   local modes = {
@@ -26,32 +42,40 @@ function setMode()
     R = "REPLACE MULTI",
   }
 
-  return modes[mode]
+  if modes[mode] then
+    return modes[mode]
+  else
+    return mode
+  end
+end
+
+function getLine()
+  return api.nvim_call_function('line', {"."})
+end
+
+function getCol()
+  return api.nvim_call_function('col', {"."})
 end
 
 function setGitBranch()
-  local branch = io.popen([[git rev-parse --abbrev-ref HEAD]])
-  local hello = branch:read("*a")
+  local branch = io.popen([[git rev-parse --abbrev-ref HEAD 2> /dev/null]])
+  local name = branch:read("*a")
   branch:close()
 
-  return hello
+  if name then
+    return name
+  else
+    return "N/B"
+  end
 end
 
+api.nvim_create_augroup("StatusLine", { clear = true })
 api.nvim_create_autocmd({
-    --"BufNewFile",
-    --"BufRead",
-    "VimEnter",
-    --"TextChanged",
-    --"TextChangedP",
-    "ModeChanged"
-  },
-  {
-    --pattern = "*.yaml,*.yml",
-    callback = function()
-      setup()
-      --if vim.fn.search("{{.\\+}}", "nw") ~= 0 then
-        --local buf = vim.api.nvim_get_current_buf()
-        --vim.api.nvim_buf_set_option(buf, "filetype", "gotmpl")
-      --end
-    end
-  })
+	"WinEnter",
+	"BufEnter",
+  "*"
+}, {
+	callback = function()
+		set.statusline = setup()
+	end
+})
