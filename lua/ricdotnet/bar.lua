@@ -1,10 +1,13 @@
 local set = vim.opt
 local api = vim.api
+local fn = vim.fn
 
 local colors = {
-  light = "#fbf1c7",
+  light_0 = "#fbf1c7",
   dark = "#1d2021",
-  
+
+  light_2 = "#d5c4a1",
+
   blue_d = "#458588",
   blue_l = "#83a598",
 
@@ -22,15 +25,14 @@ local colors = {
 
   orange_d = "#d65d0e",
   orange_l = "#fe8019",
+
+  gray_d = "#3c3836",
+  gray_l = "#504945",
 }
 
 local chars = {
   blank = " ",
-
-  left = "░▒▓",
-  right = "▓▒░",
-
-  happy = "",
+  arrow = { left = "", right = "" },
 }
 
 local function getMode()
@@ -48,8 +50,12 @@ local function getMode()
   if modes[mode] then
     return modes[mode]
   else
-    return "🇴🇹🇭🇪🇷"
+    return "other"
   end
+end
+
+local function getFile()
+  return fn.expand "%:t"
 end
 
 local function getLine()
@@ -82,54 +88,65 @@ StatusLine.setup = function()
   api.nvim_command("hi Reset gui=bold")
   
   api.nvim_command("hi LeftSeparatorPurple guifg=" .. colors["purple_d"])
-  api.nvim_command("hi RightReparatorPurple guifg=" .. colors["purple_d"])
-  api.nvim_command("hi LeftSeparatorYellow guifg=" .. colors["yellow_d"])
-  api.nvim_command("hi RightReparatorYellow guifg=" .. colors["yellow_d"])
-  
-  api.nvim_command("hi Mode guibg=" .. colors["purple_d"] .. " guifg=" .. colors["light"] .. " gui=bold")
-  api.nvim_command("hi LineColumn guibg=" .. colors["yellow_d"] .. " guifg=" .. colors["light"] .. " gui=bold")
+  api.nvim_command("hi RightSeparatorPurple guifg=" .. colors["purple_d"])
+  api.nvim_command("hi LeftSeparatorYellow guifg=" .. colors["yellow_d"] .. " guibg=" .. colors["gray_d"])
+  api.nvim_command("hi RightSeparatorYellow guifg=" .. colors["yellow_d"])
+
+  --api.nvim_command("hi RightSeparatorPurpleNew guifg=" .. colors["purple_d"] .. " guibg=" .. colors["gray_d"])
+  api.nvim_command("hi RightArrowSepPurple guifg=" .. colors["purple_d"] .. " guibg=" .. colors["purple_l"])
+  api.nvim_command("hi RightArrowSepPurpleLight guifg=" .. colors["purple_l"] .. " guibg=" .. colors["gray_d"])
+
+  api.nvim_command("hi Mode guibg=" .. colors["purple_d"] .. " guifg=" .. colors["light_0"])
+  api.nvim_command("hi File guibg=" .. colors["purple_l"] .. " guifg=" .. colors["light_2"])
+  api.nvim_command("hi LineColumn guibg=" .. colors["yellow_d"] .. " guifg=" .. colors["light_0"])
 
   -- build the line
   local statusline = {
     "%#Reset#",
 
     -- left side
-    chars["blank"],
+    --chars["blank"],
 
     -- mode styling
-    "%#LeftSeparatorPurple#",
-    chars["left"],
+    --"%#LeftSeparatorPurple#",
+    --chars["left"],
     "%#Mode#",
     chars["blank"],
     getMode(),
     chars["blank"],
-    "%#Reset#",
-    "%#RightReparatorPurple#",
-    chars["right"],
-    "%#Reset#",
+    --"%#Reset#",
+    --"%#RightReparatorPurple#",
+    "%#RightArrowSepPurple#",
+    chars["arrow"]["right"],
+    --"%#Reset#",
+
+    "%#File#",
+    chars["blank"],
+    getFile(),
+    chars["blank"],
+    "%#RightArrowSepPurpleLight#",
+    chars["arrow"]["right"],
 
     -- right side
     "%=",
 
     -- line and column
     "%#LeftSeparatorYellow#",
-    chars["left"],
+    --chars["left"],
     "%#LineColumn#",
     chars["blank"],
     "L:",
-    chars["blank"],
     getLine(),
     chars["blank"],
     "C:",
-    chars["blank"],
     getCol(),
     chars["blank"],
     "%#Reset#",
-    "%#RightReparatorYellow#",
-    chars["right"],
+    --"%#RightReparatorYellow#",
+    --chars["right"],
     
     -- last space
-    chars["blank"],
+    --chars["blank"],
   }
 
   return table.concat(statusline)

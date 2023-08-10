@@ -65,7 +65,7 @@ cmp.setup.cmdline(':', {
 -- Set up lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-local servers = { "html", "cssls", "tsserver", "jsonls", "gopls", "clangd" }
+local servers = { "html", "cssls", "vuels", "tsserver", "jsonls", "gopls", "clangd" }
 for _, server in pairs(servers) do
   require("lspconfig")[server].setup {
     capabilities = capabilities

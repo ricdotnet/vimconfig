@@ -20,4 +20,5 @@ set.smartcase = true
 set.tw = 120
 
 -- set commands
+cmd [[set splitright]]
 cmd [[set noshowmode]]
