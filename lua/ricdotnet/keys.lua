@@ -1,3 +1,9 @@
+local map = vim.keymap.set
+
 vim.g.mapleader = "."
 
-vim.keymap.set('', '<Leader>ff', ':Telescope find_files<Enter>')
+-- telescope
+map("", "<Leader>ff", ":Telescope find_files<Enter>")
+
+-- editor keys
+map("", "<C-l>", ":lua vim.lsp.buf.format()<Enter>")

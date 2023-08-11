@@ -61,7 +61,19 @@ local function getFile()
 end
 
 local function getProjectDir()
-  return "ProjectDir"
+  local fullPath = os.getenv("PWD")
+
+  if fullPath == "" then
+    return "N/A"
+  end
+
+  local dirParts = {}
+  for part in string.gmatch(fullPath, "[^/]+") do
+    table.insert(dirParts, part)
+  end
+
+  --return #dirParts
+  return "/" .. dirParts[#dirParts]
 end
 
 local function getLine()
@@ -134,7 +146,7 @@ StatusLine.setup = function()
 
     -- right side
     "%=",
-    
+
     "%#LeftArrowSepThin#",
     chars["thin"]["left"],
     chars["blank"],
@@ -156,12 +168,6 @@ StatusLine.setup = function()
     "C:",
     getCol(),
     chars["blank"],
-    "%#Reset#",
-    --"%#RightReparatorYellow#",
-    --chars["right"],
-    
-    -- last space
-    --chars["blank"],
   }
 
   return table.concat(statusline)
