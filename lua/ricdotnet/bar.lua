@@ -33,6 +33,8 @@ local colors = {
 local chars = {
   blank = " ",
   arrow = { left = "", right = "" },
+  thin = { left = "", right= "" },
+  round = { left = "◖", right = "◗" },
 }
 
 local function getMode()
@@ -56,6 +58,10 @@ end
 
 local function getFile()
   return fn.expand "%:t"
+end
+
+local function getProjectDir()
+  return "ProjectDir"
 end
 
 local function getLine()
@@ -85,40 +91,32 @@ StatusLine.setup = function()
   set.laststatus = 2
 
   -- set bar colors
-  api.nvim_command("hi Reset gui=bold")
-  
-  api.nvim_command("hi LeftSeparatorPurple guifg=" .. colors["purple_d"])
-  api.nvim_command("hi RightSeparatorPurple guifg=" .. colors["purple_d"])
-  api.nvim_command("hi LeftSeparatorYellow guifg=" .. colors["yellow_d"] .. " guibg=" .. colors["gray_d"])
-  api.nvim_command("hi RightSeparatorYellow guifg=" .. colors["yellow_d"])
-
-  --api.nvim_command("hi RightSeparatorPurpleNew guifg=" .. colors["purple_d"] .. " guibg=" .. colors["gray_d"])
+  api.nvim_command("hi Reset guibg=" .. colors["gray_d"] .. " gui=bold")
+ 
+  -- separators
   api.nvim_command("hi RightArrowSepPurple guifg=" .. colors["purple_d"] .. " guibg=" .. colors["purple_l"])
   api.nvim_command("hi RightArrowSepPurpleLight guifg=" .. colors["purple_l"] .. " guibg=" .. colors["gray_d"])
 
+  api.nvim_command("hi LeftArrowSepYellow guifg=" .. colors["yellow_d"] .. " guibg=" .. colors["yellow_l"])
+  api.nvim_command("hi LeftArrowSepYellowLight guifg=" .. colors["yellow_l"] .. " guibg=" .. colors["gray_d"])
+
+  api.nvim_command("hi RightArrowSepThin guifg=" .. colors["dark"] .. " guibg=" .. colors["gray_d"])
+  api.nvim_command("hi LeftArrowSepThin guifg=" .. colors["dark"] .. " guibg=" .. colors["gray_d"])
+
+  -- contents
   api.nvim_command("hi Mode guibg=" .. colors["purple_d"] .. " guifg=" .. colors["light_0"])
-  api.nvim_command("hi File guibg=" .. colors["purple_l"] .. " guifg=" .. colors["light_2"])
+  api.nvim_command("hi File guibg=" .. colors["purple_l"] .. " guifg=" .. colors["gray_d"])
+  api.nvim_command("hi ProjectDir guibg=" .. colors["yellow_l"] .. " guifg=" .. colors["gray_d"])
   api.nvim_command("hi LineColumn guibg=" .. colors["yellow_d"] .. " guifg=" .. colors["light_0"])
 
   -- build the line
   local statusline = {
-    "%#Reset#",
-
-    -- left side
-    --chars["blank"],
-
-    -- mode styling
-    --"%#LeftSeparatorPurple#",
-    --chars["left"],
     "%#Mode#",
     chars["blank"],
     getMode(),
     chars["blank"],
-    --"%#Reset#",
-    --"%#RightReparatorPurple#",
     "%#RightArrowSepPurple#",
     chars["arrow"]["right"],
-    --"%#Reset#",
 
     "%#File#",
     chars["blank"],
@@ -127,12 +125,29 @@ StatusLine.setup = function()
     "%#RightArrowSepPurpleLight#",
     chars["arrow"]["right"],
 
+    chars["blank"],
+    -- git branch here
+    chars["blank"],
+    "%#RightArrowSepThin#",
+    chars["thin"]["right"],
+    "%#Reset#",
+
     -- right side
     "%=",
-
-    -- line and column
-    "%#LeftSeparatorYellow#",
-    --chars["left"],
+    
+    "%#LeftArrowSepThin#",
+    chars["thin"]["left"],
+    chars["blank"],
+    -- some more content here
+    chars["blank"],
+    "%#LeftArrowSepYellowLight#",
+    chars["arrow"]["left"],
+    "%#ProjectDir#",
+    chars["blank"],
+    getProjectDir(),
+    chars["blank"],
+    "%#LeftArrowSepYellow#",
+    chars["arrow"]["left"],
     "%#LineColumn#",
     chars["blank"],
     "L:",
