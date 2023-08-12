@@ -40,5 +40,8 @@ lazy.setup({
   { "rafamadriz/friendly-snippets" },
   { "ray-x/lsp_signature.nvim" },
   { "windwp/nvim-autopairs", event = "InsertEnter", opts = {} },
-  { "ellisonleao/gruvbox.nvim", priority = 1000 }
+  { "ellisonleao/gruvbox.nvim", priority = 1000 },
+  { "nvim-tree/nvim-web-devicons" },
+  --{ "Glench/Vim-Jinja2-Syntax" },
+  { "lepture/vim-jinja"},
 })

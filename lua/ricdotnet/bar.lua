@@ -33,9 +33,30 @@ local colors = {
 local chars = {
   blank = " ",
   arrow = { left = "", right = "" },
-  thin = { left = "", right= "" },
+  thin = { left = "", right = "" },
   round = { left = "◖", right = "◗" },
+  upstream = "",
+  directory = "",
 }
+
+local function getIcon(filename, filetype)
+  local icon = ""
+
+  if filetype == "/" then
+    return chars["directory"] .. " "
+  end
+
+  local ok, devicons = pcall(require, "nvim-web-devicons")
+
+  if not ok then
+    return icon
+  end
+
+  local ft_icon = devicons.get_icon(filename, filetype)
+  icon = (ft_icon ~= nil and " " .. ft_icon) or ""
+
+  return icon
+end
 
 local function getMode()
   local mode = api.nvim_get_mode().mode
@@ -49,15 +70,31 @@ local function getMode()
     R = "REPLACE MULTI",
   }
 
-  if modes[mode] then
-    return modes[mode]
-  else
-    return "other"
-  end
+  return table.concat({
+    "%#Mode#",
+    chars["blank"],
+    modes[mode] or "other",
+    chars["blank"],
+    "%#RightArrowSepPurple#",
+    chars["arrow"]["right"],
+  })
 end
 
 local function getFile()
-  return fn.expand "%:t"
+  local filename = fn.expand "%:t"
+  local icon = ""
+
+  if filename ~= nil then
+    icon = getIcon(filename)
+  end
+
+  return table.concat({
+    "%#File#",
+    icon .. " " .. filename,
+    chars["blank"],
+    "%#RightArrowSepPurpleLight#",
+    chars["arrow"]["right"],
+  })
 end
 
 local function getProjectDir()
@@ -72,28 +109,38 @@ local function getProjectDir()
     table.insert(dirParts, part)
   end
 
+  local projectDir = dirParts[#dirParts]
+
   --return #dirParts
-  return "/" .. dirParts[#dirParts]
+  return getIcon("nvim", "/") .. "/" .. projectDir
 end
 
 local function getLine()
-  return api.nvim_call_function('line', {"."})
+  return api.nvim_call_function('line', { "." })
 end
 
 local function getCol()
-  return api.nvim_call_function('col', {"."})
+  return api.nvim_call_function('col', { "." })
 end
 
-local function setGitBranch()
-  local branch = io.popen([[git rev-parse --abbrev-ref HEAD 2> /dev/null]])
-  local name = branch:read("*a")
-  branch:close()
+local function getGitBranch()
+  local branch = ".git not found"
 
-  if name then
-    return name
-  else
-    return "N/B"
+  if fn.isdirectory ".git" ~= 0 then
+    branch = vim.fn.system "git branch --show-current"
   end
+
+  --return "no .git found"
+  return table.concat({
+    chars["blank"],
+    chars["upstream"],
+    chars["blank"],
+    branch,
+    chars["blank"],
+    "%#RightArrowSepThin#",
+    chars["thin"]["right"],
+    "%#Reset#",
+  })
 end
 
 -- BUILD THE LINE --
@@ -104,7 +151,7 @@ StatusLine.setup = function()
 
   -- set bar colors
   api.nvim_command("hi Reset guibg=" .. colors["gray_d"] .. " gui=bold")
- 
+
   -- separators
   api.nvim_command("hi RightArrowSepPurple guifg=" .. colors["purple_d"] .. " guibg=" .. colors["purple_l"])
   api.nvim_command("hi RightArrowSepPurpleLight guifg=" .. colors["purple_l"] .. " guibg=" .. colors["gray_d"])
@@ -123,26 +170,9 @@ StatusLine.setup = function()
 
   -- build the line
   local statusline = {
-    "%#Mode#",
-    chars["blank"],
     getMode(),
-    chars["blank"],
-    "%#RightArrowSepPurple#",
-    chars["arrow"]["right"],
-
-    "%#File#",
-    chars["blank"],
     getFile(),
-    chars["blank"],
-    "%#RightArrowSepPurpleLight#",
-    chars["arrow"]["right"],
-
-    chars["blank"],
-    -- git branch here
-    chars["blank"],
-    "%#RightArrowSepThin#",
-    chars["thin"]["right"],
-    "%#Reset#",
+    getGitBranch(),
 
     -- right side
     "%=",

@@ -65,30 +65,14 @@ end
 -- Set up lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-local servers = { "html", "cssls", "vuels", "tsserver", "jsonls", "gopls", "clangd", "lua_ls" }
+require("ricdotnet.ls.htmlls")(capabilities, on_attach)
+require("ricdotnet.ls.tsls")(capabilities, on_attach)
+require("ricdotnet.ls.luals")(capabilities, on_attach)
+
+local servers = { "cssls", "vuels", "jsonls", "gopls", "clangd" }
 for _, server in pairs(servers) do
-  if server == "lua_ls" then
-    require("lspconfig")[server].setup {
-      on_attach = on_attach,
-      settings = {
-        Lua = {
-          format = {
-            enable = true,
-            defaultConfig = {
-              indent_style = "space",
-              indent_size = "2",
-            },
-          },
-          diagnostics = {
-            globals = { "vim" },
-          },
-        },
-      },
-    }
-  else
-    require("lspconfig")[server].setup {
-      on_attach = on_attach,
-      capabilities = capabilities,
-    }
-  end
+  require("lspconfig")[server].setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+  }
 end

@@ -1,5 +1,5 @@
 require("ricdotnet.lazy")
-
+require("ricdotnet.icons")
 require("ricdotnet.set")
 require("ricdotnet.keys")
 require("ricdotnet.bar")
