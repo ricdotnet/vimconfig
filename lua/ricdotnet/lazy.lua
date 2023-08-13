@@ -43,5 +43,7 @@ lazy.setup({
   { "ellisonleao/gruvbox.nvim", priority = 1000 },
   { "nvim-tree/nvim-web-devicons" },
   --{ "Glench/Vim-Jinja2-Syntax" },
-  { "lepture/vim-jinja"},
+  { "lepture/vim-jinja" },
+  { "lewis6991/gitsigns.nvim" },
+  { "wakatime/vim-wakatime" },
 })
