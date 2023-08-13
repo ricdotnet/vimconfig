@@ -34,16 +34,17 @@ local chars = {
   blank = " ",
   arrow = { left = "", right = "" },
   thin = { left = "", right = "" },
-  upstream = "",
-  directory = "",
+  upstream = "  ",
+  directory = "  ",
+  git = {
+    added = "  ",
+    changed = "  ",
+    removed = "  ",
+  },
 }
 
 local function getIcon(filename, filetype)
   local icon = ""
-
-  if filetype == "/" then
-    return chars["directory"] .. " "
-  end
 
   local ok, devicons = pcall(require, "nvim-web-devicons")
 
@@ -52,7 +53,7 @@ local function getIcon(filename, filetype)
   end
 
   local ft_icon = devicons.get_icon(filename, filetype)
-  icon = (ft_icon ~= nil and " " .. ft_icon) or ""
+  icon = ft_icon or ""
 
   return icon
 end
@@ -69,27 +70,18 @@ local function getMode()
     R = "REPLACE MULTI",
   }
 
-  return table.concat({
-    "%#Mode#",
-    chars["blank"],
-    modes[mode] or "other",
-    chars["blank"],
-  })
+  return modes[mode] or "other"
 end
 
 local function getFile()
   local filename = fn.expand "%:t"
-  local icon = ""
+  local icon = getIcon("default_icon")
 
-  if filename ~= nil then
-    icon = getIcon(filename)
+  if filename == nil or filename == "" then
+    return icon .. " "
   end
 
-  return table.concat({
-    "%#File#",
-    icon .. " " .. filename,
-    chars["blank"],
-  })
+  return getIcon(filename) .. " " .. filename
 end
 
 local function getProjectDir()
@@ -111,14 +103,7 @@ local function getProjectDir()
 
   local projectDir = dirParts[#dirParts]
 
-  return table.concat({
-    "%#ProjectDir#",
-    chars["blank"],
-    getIcon(projectDir, "/"),
-    "/",
-    projectDir,
-    chars["blank"],
-  })
+  return getIcon("default_icon") .. " /" .. projectDir
 end
 
 local function getGitBranch()
@@ -128,13 +113,7 @@ local function getGitBranch()
     branch = vim.fn.system "git branch --show-current"
   end
 
-  return table.concat({
-    chars["blank"],
-    chars["upstream"],
-    chars["blank"],
-    branch,
-    chars["blank"],
-  })
+  return getIcon("github") .. chars["blank"] .. chars["upstream"] .. branch
 end
 
 local function getCurrentLsp()
@@ -147,16 +126,11 @@ local function getCurrentLsp()
 
   for _, client in pairs(lsps) do
     if client.attached_buffers[api.nvim_get_current_buf()] and client.name ~= "null-ls" then
-      lsp = "LSP: " .. client.name
+      lsp = "   LSP " .. client.name
     end
   end
 
-  return table.concat({
-    "%#Lsp#",
-    chars["blank"],
-    lsp,
-    chars["blank"],
-  })
+  return lsp
 end
 
 local function getLine()
@@ -168,16 +142,7 @@ local function getCol()
 end
 
 local function getLineAndCol()
-  return table.concat({
-    "%#LineColumn#",
-    chars["blank"],
-    "L:",
-    getLine(),
-    chars["blank"],
-    "C:",
-    getCol(),
-    chars["blank"],
-  })
+  return getLine() .. ":" .. getCol()
 end
 
 -- BUILD THE LINE --
@@ -190,56 +155,44 @@ StatusLine.setup = function()
   api.nvim_command("hi Reset guibg=" .. colors["gray_d"] .. " gui=bold")
 
   -- separators
-  api.nvim_command("hi RightArrowSepPurple guifg=" .. colors["purple_d"] .. " guibg=" .. colors["purple_l"])
-  api.nvim_command("hi RightArrowSepPurpleLight guifg=" .. colors["purple_l"] .. " guibg=" .. colors["gray_d"])
+  api.nvim_command("hi ArrowThin guifg=" .. colors["dark"] .. " guibg=" .. colors["gray_d"])
+  api.nvim_command("hi ArrowPurpleD guifg=" .. colors["purple_d"] .. " guibg=" .. colors["purple_l"])
+  api.nvim_command("hi ArrowPurpleL guifg=" .. colors["purple_l"] .. " guibg=" .. colors["gray_d"])
+  api.nvim_command("hi ArrowBlueD guifg=" .. colors["blue_d"] .. " guibg=" .. colors["blue_l"])
+  api.nvim_command("hi ArrowBlueL guifg=" .. colors["blue_l"] .. " guibg=" .. colors["gray_d"])
 
-  api.nvim_command("hi LeftArrowSepYellow guifg=" .. colors["yellow_d"] .. " guibg=" .. colors["yellow_l"])
-  api.nvim_command("hi LeftArrowSepYellowLight guifg=" .. colors["yellow_l"] .. " guibg=" .. colors["gray_d"])
-
-  api.nvim_command("hi RightArrowSepThin guifg=" .. colors["dark"] .. " guibg=" .. colors["gray_d"])
-  api.nvim_command("hi LeftArrowSepThin guifg=" .. colors["dark"] .. " guibg=" .. colors["gray_d"])
-
-  -- contents
-  api.nvim_command("hi Mode guibg=" .. colors["purple_d"] .. " guifg=" .. colors["light_0"])
-  api.nvim_command("hi File guibg=" .. colors["purple_l"] .. " guifg=" .. colors["gray_d"])
-  api.nvim_command("hi Lsp guibg=" .. colors["gray_d"] .. " guifg=" .. colors["yellow_l"])
-  api.nvim_command("hi ProjectDir guibg=" .. colors["yellow_l"] .. " guifg=" .. colors["gray_d"])
-  api.nvim_command("hi LineColumn guibg=" .. colors["yellow_d"] .. " guifg=" .. colors["light_0"])
+  -- parts
+  api.nvim_command("hi Part1 guibg=" .. colors["purple_d"] .. " guifg=" .. colors["light_0"])
+  api.nvim_command("hi Part2 guibg=" .. colors["purple_l"] .. " guifg=" .. colors["dark"])
+  api.nvim_command("hi Part3 guibg=" .. colors["gray_d"] .. " guifg=" .. colors["purple_l"])
+  api.nvim_command("hi Part4 guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_2"])
+  api.nvim_command("hi Part5 guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_2"])
+  api.nvim_command("hi Part6 guibg=" .. colors["gray_d"] .. " guifg=" .. colors["blue_l"])
+  api.nvim_command("hi Part7 guibg=" .. colors["blue_l"] .. " guifg=" .. colors["dark"])
+  api.nvim_command("hi Part8 guibg=" .. colors["blue_d"] .. " guifg=" .. colors["light_2"])
 
   -- build the line
   local statusline = {
-    getMode(),
-
-    "%#RightArrowSepPurple#",
-    chars["arrow"]["right"],
-
-    getFile(),
-
-    "%#RightArrowSepPurpleLight#",
-    chars["arrow"]["right"],
-
-    getGitBranch(),
-
-    "%#RightArrowSepThin#",
-    chars["thin"]["right"],
+    "%#Part1#" .. chars["blank"] .. getMode() .. chars["blank"],
+    "%#ArrowPurpleD#" .. chars["arrow"]["right"],
+    "%#Part2#" .. chars["blank"] .. getFile() .. chars["blank"],
+    "%#ArrowPurpleL#" .. chars["arrow"]["right"],
+    "%#Part3#" .. chars["blank"] .. getGitBranch() .. chars["blank"],
+    "%#ArrowThin#" .. chars["thin"]["right"],
+    "%#Part4#" .. chars["blank"] .. "xx xx xx" .. chars["blank"],
+    "%#ArrowThin#" .. chars["thin"]["right"],
 
     -- right side
     "%=",
 
-    "%#LeftArrowSepThin#",
-    chars["thin"]["left"],
-
-    getCurrentLsp(),
-
-    "%#LeftArrowSepYellowLight#",
-    chars["arrow"]["left"],
-
-    getProjectDir(),
-
-    "%#LeftArrowSepYellow#",
-    chars["arrow"]["left"],
-
-    getLineAndCol(),
+    "%#ArrowThin#" .. chars["thin"]["left"],
+    "%#Part5#" .. chars["blank"] .. "xx xx xx" .. chars["blank"],
+    "%#ArrowThin#" .. chars["thin"]["left"],
+    "%#Part6#" .. chars["blank"] .. getCurrentLsp() .. chars["blank"],
+    "%#ArrowBlueL#" .. chars["arrow"]["left"],
+    "%#Part7#" .. chars["blank"] .. getProjectDir() .. chars["blank"],
+    "%#ArrowBlueD#" .. chars["arrow"]["left"],
+    "%#Part8#" .. chars["blank"] .. getLineAndCol() .. chars["blank"],
   }
 
   return table.concat(statusline)
