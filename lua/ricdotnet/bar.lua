@@ -98,7 +98,7 @@ local function getFile()
 end
 
 local function getProjectDir()
-  local fullPath = os.getenv("PWD")
+  local fullPath = os.getenv("PWD") or io.popen("CD"):read("*a")
 
   if fullPath == "" then
     return "N/A"
