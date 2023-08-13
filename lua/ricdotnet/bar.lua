@@ -34,7 +34,6 @@ local chars = {
   blank = " ",
   arrow = { left = "", right = "" },
   thin = { left = "", right = "" },
-  round = { left = "◖", right = "◗" },
   upstream = "",
   directory = "",
 }
@@ -75,8 +74,6 @@ local function getMode()
     chars["blank"],
     modes[mode] or "other",
     chars["blank"],
-    "%#RightArrowSepPurple#",
-    chars["arrow"]["right"],
   })
 end
 
@@ -92,27 +89,74 @@ local function getFile()
     "%#File#",
     icon .. " " .. filename,
     chars["blank"],
-    "%#RightArrowSepPurpleLight#",
-    chars["arrow"]["right"],
   })
 end
 
 local function getProjectDir()
   local fullPath = os.getenv("PWD") or io.popen("CD"):read("*a")
+  local delimiter = "/"
 
   if fullPath == "" then
     return "N/A"
   end
 
+  if os.getenv == "Windows_NT" then
+    delimiter = "\\"
+  end
+
   local dirParts = {}
-  for part in string.gmatch(fullPath, "[^/]+") do
+  for part in string.gmatch(fullPath, "[^" .. delimiter .. "]+") do
     table.insert(dirParts, part)
   end
 
   local projectDir = dirParts[#dirParts]
 
-  --return #dirParts
-  return getIcon("nvim", "/") .. "/" .. projectDir
+  return table.concat({
+    "%#ProjectDir#",
+    chars["blank"],
+    getIcon(projectDir, "/"),
+    "/",
+    projectDir,
+    chars["blank"],
+  })
+end
+
+local function getGitBranch()
+  local branch = ".git not found"
+
+  if fn.isdirectory ".git" ~= 0 then
+    branch = vim.fn.system "git branch --show-current"
+  end
+
+  return table.concat({
+    chars["blank"],
+    chars["upstream"],
+    chars["blank"],
+    branch,
+    chars["blank"],
+  })
+end
+
+local function getCurrentLsp()
+  local lsps = vim.lsp.get_active_clients()
+  local lsp = "NO LSP LOADED"
+
+  if not lsps or lsps == nil then
+    return lsp
+  end
+
+  for _, client in pairs(lsps) do
+    if client.attached_buffers[api.nvim_get_current_buf()] and client.name ~= "null-ls" then
+      lsp = "LSP: " .. client.name
+    end
+  end
+
+  return table.concat({
+    "%#Lsp#",
+    chars["blank"],
+    lsp,
+    chars["blank"],
+  })
 end
 
 local function getLine()
@@ -123,23 +167,16 @@ local function getCol()
   return api.nvim_call_function('col', { "." })
 end
 
-local function getGitBranch()
-  local branch = ".git not found"
-
-  if fn.isdirectory ".git" ~= 0 then
-    branch = vim.fn.system "git branch --show-current"
-  end
-
-  --return "no .git found"
+local function getLineAndCol()
   return table.concat({
+    "%#LineColumn#",
     chars["blank"],
-    chars["upstream"],
+    "L:",
+    getLine(),
     chars["blank"],
-    branch,
+    "C:",
+    getCol(),
     chars["blank"],
-    "%#RightArrowSepThin#",
-    chars["thin"]["right"],
-    "%#Reset#",
   })
 end
 
@@ -165,39 +202,44 @@ StatusLine.setup = function()
   -- contents
   api.nvim_command("hi Mode guibg=" .. colors["purple_d"] .. " guifg=" .. colors["light_0"])
   api.nvim_command("hi File guibg=" .. colors["purple_l"] .. " guifg=" .. colors["gray_d"])
+  api.nvim_command("hi Lsp guibg=" .. colors["gray_d"] .. " guifg=" .. colors["yellow_l"])
   api.nvim_command("hi ProjectDir guibg=" .. colors["yellow_l"] .. " guifg=" .. colors["gray_d"])
   api.nvim_command("hi LineColumn guibg=" .. colors["yellow_d"] .. " guifg=" .. colors["light_0"])
 
   -- build the line
   local statusline = {
     getMode(),
+
+    "%#RightArrowSepPurple#",
+    chars["arrow"]["right"],
+
     getFile(),
+
+    "%#RightArrowSepPurpleLight#",
+    chars["arrow"]["right"],
+
     getGitBranch(),
+
+    "%#RightArrowSepThin#",
+    chars["thin"]["right"],
 
     -- right side
     "%=",
 
     "%#LeftArrowSepThin#",
     chars["thin"]["left"],
-    chars["blank"],
-    -- some more content here
-    chars["blank"],
+
+    getCurrentLsp(),
+
     "%#LeftArrowSepYellowLight#",
     chars["arrow"]["left"],
-    "%#ProjectDir#",
-    chars["blank"],
+
     getProjectDir(),
-    chars["blank"],
+
     "%#LeftArrowSepYellow#",
     chars["arrow"]["left"],
-    "%#LineColumn#",
-    chars["blank"],
-    "L:",
-    getLine(),
-    chars["blank"],
-    "C:",
-    getCol(),
-    chars["blank"],
+
+    getLineAndCol(),
   }
 
   return table.concat(statusline)
@@ -206,6 +248,6 @@ end
 vim.api.nvim_exec([[
   augroup Statusline
     autocmd!
-    autocmd VimEnter,BufEnter * setlocal statusline=%!v:lua.StatusLine.setup()
+    autocmd VimEnter,WinEnter,BufEnter * setlocal statusline=%!v:lua.StatusLine.setup()
   augroup END
 ]], false)
