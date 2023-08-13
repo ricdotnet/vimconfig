@@ -100,7 +100,7 @@ local function getProjectDir()
     return "N/A"
   end
 
-  if os.getenv == "Windows_NT" then
+  if os.getenv("OS") == "Windows_NT" then
     delimiter = "\\"
   end
 
