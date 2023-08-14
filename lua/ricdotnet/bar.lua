@@ -41,6 +41,7 @@ local chars = {
   upstream = "  ",
   directory = "  ",
   watch = " 󰥔 ",
+  config = "  ",
   git = {
     added = "  ",
     changed = "  ",
@@ -140,7 +141,7 @@ end
 
 local function getCurrentLsp()
   local lsps = vim.lsp.get_active_clients()
-  local lsp = "NO LSP LOADED"
+  local lsp = chars["config"]
 
   if not lsps or lsps == nil then
     return lsp
