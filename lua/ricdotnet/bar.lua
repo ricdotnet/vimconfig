@@ -91,23 +91,7 @@ local function getFile()
 end
 
 local function getProjectDir()
-  local fullPath = os.getenv("PWD") or io.popen("CD"):read("*a")
-  local delimiter = "/"
-
-  if fullPath == "" then
-    return "N/A"
-  end
-
-  if os.getenv("OS") == "Windows_NT" then
-    delimiter = "\\"
-  end
-
-  local dirParts = {}
-  for part in string.gmatch(fullPath, "[^" .. delimiter .. "]+") do
-    table.insert(dirParts, part)
-  end
-
-  local projectDir = dirParts[#dirParts]
+  local projectDir = fn.fnamemodify(fn.getcwd(), ":t")
 
   return getIcon("default_icon") .. " /" .. projectDir
 end
@@ -122,6 +106,10 @@ local function getGitBranch()
 end
 
 local function getGitStats()
+  if vim.o.columns < 120 then
+    return ""
+  end
+
   if not vim.b.gitsigns_head or not vim.g.gitsigns_head then
     return ""
   end
@@ -185,6 +173,10 @@ end
 runWTJob() -- run once on start
 
 local function getWakaTimeStats()
+  if vim.o.columns < 120 then
+    return ""
+  end
+
   -- every 5 minutes
   if os.time() - startTime >= (60 * 5) then
     runWTJob()
@@ -231,13 +223,14 @@ StatusLine.setup = function()
     "%#ArrowThin#" .. chars["thin"]["right"],
     "%#Part4#" .. chars["blank"] .. getGitStats() .. chars["blank"],
     "%#ArrowThin#" .. chars["thin"]["right"],
+
     "%#Middle#",
     -- right side
     "%=",
 
     getWakaTimeStats(),
     "%#ArrowThin#" .. chars["thin"]["left"],
-    "%#Part5#" .. chars["blank"] .. "xx xx xx" .. chars["blank"],
+    "%#Part5#" .. chars["blank"] .. "" .. chars["blank"],
     "%#ArrowThin#" .. chars["thin"]["left"],
     "%#Part6#" .. chars["blank"] .. getCurrentLsp() .. chars["blank"],
     "%#ArrowBlueL#" .. chars["arrow"]["left"],
