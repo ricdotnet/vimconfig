@@ -46,4 +46,5 @@ lazy.setup({
   { "lepture/vim-jinja" },
   { "lewis6991/gitsigns.nvim" },
   { "wakatime/vim-wakatime" },
+  { "dense-analysis/ale" },
 })
