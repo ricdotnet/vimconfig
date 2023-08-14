@@ -76,7 +76,7 @@ local function getMode()
     R = "REPLACE MULTI",
   }
 
-  return modes[mode] or "other"
+  return modes[mode] or mode
 end
 
 local function getFile()

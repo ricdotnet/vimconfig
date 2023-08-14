@@ -1,7 +1,8 @@
-require("luasnip.loaders.from_snipmate").lazy_load({ paths = { "./snippets" } })
-
 local function on_attach()
   local cmp = require("cmp")
+
+  require("luasnip.loaders.from_vscode").lazy_load()
+  require("luasnip.loaders.from_snipmate").lazy_load({ paths = { "./snippets" } })
 
   cmp.setup({
     snippet = {
