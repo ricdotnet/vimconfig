@@ -19,6 +19,8 @@ set.smartcase = true
 
 set.tw = 120
 
+set.showtabline = 2
+
 -- set commands
 cmd [[set splitright]]
 cmd [[set noshowmode]]

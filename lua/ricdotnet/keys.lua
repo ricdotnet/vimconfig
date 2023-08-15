@@ -17,3 +17,6 @@ map("", "<Leader>tt", ":terminal<Enter>i") -- new terminal
 -- editor
 map("", "<C-l>", ":lua vim.lsp.buf.format()<Enter>") -- format the current file
 map("", "<C-k>", ":lua vim.lsp.buf.hover()<Enter>")  -- show function definition
+map("", "<Leader>nt", ":tabnew")
+map("", "<Leader>tn", ":tabnext")
+map("", "<Leader>tp", ":tabprev")
