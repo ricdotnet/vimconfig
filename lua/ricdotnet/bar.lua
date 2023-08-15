@@ -189,7 +189,7 @@ end
 -- BUILD THE LINE --
 StatusLine = {}
 
-StatusLine.setup = function()
+StatusLine.active = function()
   set.laststatus = 2
 
   -- set bar colors
@@ -212,6 +212,7 @@ StatusLine.setup = function()
   cmd("hi Part7 guibg=" .. colors["blue_l"] .. " guifg=" .. colors["dark"])
   cmd("hi Part8 guibg=" .. colors["blue_d"] .. " guifg=" .. colors["light_2"])
   cmd("hi Middle guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_4"])
+  cmd("hi Inactive guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_4"])
 
   -- build the line
   local statusline = {
@@ -242,9 +243,25 @@ StatusLine.setup = function()
   return table.concat(statusline)
 end
 
+function StatusLine.inactive()
+  local statusline = {
+    "%#Inactive#",
+    chars["blank"] .. getFile() .. chars["blank"],
+    chars["thin"]["right"] .. chars["blank"],
+    getGitStats() .. chars["blank"],
+    chars["thin"]["right"],
+    "%=",
+    chars["blank"] .. chars["thin"]["left"] .. chars["blank"],
+    getProjectDir() .. chars["blank"],
+  }
+
+  return table.concat(statusline)
+end
+
 vim.api.nvim_exec([[
   augroup Statusline
     autocmd!
-    autocmd VimEnter,WinEnter,BufEnter * setlocal statusline=%!v:lua.StatusLine.setup()
+    autocmd VimEnter,WinEnter,BufEnter * setlocal statusline=%!v:lua.StatusLine.active()
+    autocmd WinLeave,BufLeave * setlocal statusline=%{%v:lua.StatusLine.inactive()%}
   augroup END
 ]], false)

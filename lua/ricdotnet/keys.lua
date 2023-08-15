@@ -3,7 +3,7 @@ local map = vim.keymap.set
 vim.g.mapleader = "."
 
 --map("", "<Leader>b", ":b")
-map("", "<C-q>", ":bd<Enter>") -- close current file
+map("", "<C-q>", ":bd<Enter>") -- close current filekeys
 
 -- telescope
 map("", "<Leader>ff", ":Telescope find_files<Enter>")           -- show list of files
@@ -21,4 +21,7 @@ map("", "<C-k>", ":lua vim.lsp.buf.hover()<Enter>")  -- show function definition
 map("", "<Leader>nt", ":tabnew")
 map("", "<Leader>tn", ":tabnext<Enter>")
 map("", "<Leader>tp", ":tabprev<Enter>")
-map("", "<Leader>ntt", ":tabnew terminal<Enter>") -- new terminal
+map("", "<Leader>ntt", ":tabnew term://zsh<Enter>a")       -- new terminal in a new tab
+
+map("n", "gd", ":lua vim.lsp.buf.definition()<Enter>")       -- get a function definition
+map("n", "gtd", ":lua vim.lsp.buf.type_definition()<Enter>") -- get a type definition
