@@ -25,4 +25,5 @@ require("gruvbox").setup({
 
 --cmd.background = dark
 --cmd.colorscheme "gruvbox"
-cmd.colorscheme "catppuccin"
+--cmd.colorscheme "catppuccin"
+cmd.colorscheme "midnight"
