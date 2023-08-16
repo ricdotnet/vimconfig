@@ -26,6 +26,7 @@ lazy.path = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 lazy.opts = {}
 
 lazy.setup({
+  { 'nvim-treesitter/nvim-treesitter' },
   { "nvim-telescope/telescope.nvim" },
   { "nvim-lua/plenary.nvim" },
   { "dasupradyumna/midnight.nvim" },

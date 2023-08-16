@@ -20,6 +20,7 @@ set.smartcase = true
 set.tw = 120
 
 set.showtabline = 2
+set.colorcolumn = "120"
 
 -- set commands
 cmd [[set splitright]]
