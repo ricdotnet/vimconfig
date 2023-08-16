@@ -25,3 +25,6 @@ map("", "<Leader>ntt", ":tabnew term://zsh<Enter>a")       -- new terminal in a 
 
 map("n", "gd", ":lua vim.lsp.buf.definition()<Enter>")       -- get a function definition
 map("n", "gtd", ":lua vim.lsp.buf.type_definition()<Enter>") -- get a type definition
+
+-- test keys
+map("n", "<Leader>ov", "set previewpopup=height:10,width:60")

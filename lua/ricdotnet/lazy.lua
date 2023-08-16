@@ -29,7 +29,6 @@ lazy.setup({
   { 'nvim-treesitter/nvim-treesitter' },
   { "nvim-telescope/telescope.nvim" },
   { "nvim-lua/plenary.nvim" },
-  { "dasupradyumna/midnight.nvim" },
   { "neovim/nvim-lspconfig" },
   { "hrsh7th/nvim-cmp" },
   { "hrsh7th/cmp-nvim-lsp" },
@@ -40,12 +39,15 @@ lazy.setup({
   { "L3MON4D3/LuaSnip" },
   { "rafamadriz/friendly-snippets" },
   { "ray-x/lsp_signature.nvim" },
-  { "windwp/nvim-autopairs", event = "InsertEnter", opts = {} },
-  { "ellisonleao/gruvbox.nvim", priority = 1000 },
+  { "windwp/nvim-autopairs",          event = "InsertEnter", opts = {} },
   { "nvim-tree/nvim-web-devicons" },
-  --{ "Glench/Vim-Jinja2-Syntax" },
   { "lepture/vim-jinja" },
   { "lewis6991/gitsigns.nvim" },
   { "wakatime/vim-wakatime" },
   { "dense-analysis/ale" },
+
+  -- themes
+  { "dasupradyumna/midnight.nvim" },
+  { "ellisonleao/gruvbox.nvim" },
+  { "catppuccin/nvim" },
 })

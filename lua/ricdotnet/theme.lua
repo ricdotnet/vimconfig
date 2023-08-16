@@ -23,5 +23,6 @@ require("gruvbox").setup({
   transparent_mode = false,
 })
 
-cmd.background = dark
-cmd.colorscheme "gruvbox"
+--cmd.background = dark
+--cmd.colorscheme "gruvbox"
+cmd.colorscheme "catppuccin"
