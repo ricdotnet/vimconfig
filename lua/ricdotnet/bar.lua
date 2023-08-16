@@ -144,16 +144,18 @@ local function getCurrentLsp()
   return lsp
 end
 
-local function getLine()
-  return api.nvim_call_function('line', { "." })
-end
-
-local function getCol()
-  return api.nvim_call_function('col', { "." })
-end
-
 local function getLineAndCol()
-  return getLine() .. ":" .. getCol()
+  local current_line = fn.line "."
+  local current_col = fn.col "."
+  local total_lines = fn.line "$"
+
+  local perc = math.modf((current_line * 100) / total_lines)
+  local text = "%%" .. perc
+
+  text = (current_line == 1 and "Top") or text
+  text = (current_line == total_lines and "Bot") or text
+
+  return current_line .. ":" .. current_col .. " - " .. text
 end
 
 -- TODO: refactor using timers from luv
