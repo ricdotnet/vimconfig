@@ -4,6 +4,7 @@ local fn = vim.fn
 local cmd = api.nvim_command
 
 local job = require("plenary.job")
+local utils = require("ricdotnet.utils")
 
 local colors = {
   dark = "#1d2021",
@@ -106,7 +107,7 @@ local function getGitBranch()
 end
 
 local function getGitStats()
-  if vim.o.columns < 120 then
+  if utils.getPaneWidth() < 120 then
     return ""
   end
 
@@ -129,7 +130,7 @@ end
 
 local function getCurrentLsp()
   local lsps = vim.lsp.get_active_clients()
-  local lsp = chars["config"]
+  local lsp = ""
 
   if not lsps or lsps == nil then
     return lsp
@@ -175,7 +176,7 @@ end
 runWTJob() -- run once on start
 
 local function getWakaTimeStats()
-  if vim.o.columns < 120 then
+  if utils.getPaneWidth() < 120 then
     return ""
   end
 
