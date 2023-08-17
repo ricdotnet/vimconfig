@@ -184,6 +184,29 @@ if vim.g.colors_name == "gruvbox" then
   cmd("hi Inactive guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_4"])
 end
 
+if vim.g.colors_name == "onedark" then
+  local odc = require("onedark.colors")
+
+  cmd("hi Reset guibg=" .. odc["bg2"] .. " gui=bold")
+  cmd("hi ArrowThin guifg=" .. odc["grey"] .. " guibg=" .. odc["bg2"])
+  cmd("hi ArrowLeftD guifg=" .. odc["green"] .. " guibg=" .. odc["grey"])
+  cmd("hi ArrowLeftL guifg=" .. odc["grey"] .. " guibg=" .. odc["bg2"])
+  cmd("hi ArrowRightD guifg=" .. odc["green"] .. " guibg=" .. odc["grey"])
+  cmd("hi ArrowRightL guifg=" .. odc["grey"] .. " guibg=" .. odc["bg2"])
+
+  -- parts
+  cmd("hi Part1 guibg=" .. odc["green"] .. " guifg=" .. odc["black"])
+  cmd("hi Part2 guibg=" .. odc["grey"] .. " guifg=" .. odc["fg"])
+  cmd("hi Part3 guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
+  cmd("hi Part4 guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
+  cmd("hi Part5 guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
+  cmd("hi Part6 guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
+  cmd("hi Part7 guibg=" .. odc["grey"] .. " guifg=" .. odc["fg"])
+  cmd("hi Part8 guibg=" .. odc["green"] .. " guifg=" .. odc["black"])
+  cmd("hi Middle guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
+  cmd("hi Inactive guibg=" .. odc["bg1"] .. " guifg=" .. odc["grey"])
+end
+
 StatusLine = {}
 
 StatusLine.active = function()
@@ -191,9 +214,9 @@ StatusLine.active = function()
 
   local statusline = {
     "%#Part1#" .. chars["blank"] .. getMode() .. chars["blank"],
-    "%#ArrowPurpleD#" .. chars["arrow"]["right"],
+    "%#ArrowLeftD#" .. chars["arrow"]["right"],
     "%#Part2#" .. chars["blank"] .. getFile() .. chars["blank"],
-    "%#ArrowPurpleL#" .. chars["arrow"]["right"],
+    "%#ArrowLeftL#" .. chars["arrow"]["right"],
     "%#Part3#" .. chars["blank"] .. getGitBranch() .. chars["blank"],
     "%#ArrowThin#" .. chars["thin"]["right"],
     "%#Part4#" .. chars["blank"] .. getGitStats() .. chars["blank"],
@@ -208,9 +231,9 @@ StatusLine.active = function()
     "%#Part5#" .. chars["blank"] .. "" .. chars["blank"],
     "%#ArrowThin#" .. chars["thin"]["left"],
     "%#Part6#" .. chars["blank"] .. getCurrentLsp() .. chars["blank"],
-    "%#ArrowBlueL#" .. chars["arrow"]["left"],
+    "%#ArrowRightL#" .. chars["arrow"]["left"],
     "%#Part7#" .. chars["blank"] .. getProjectDir() .. chars["blank"],
-    "%#ArrowBlueD#" .. chars["arrow"]["left"],
+    "%#ArrowRightD#" .. chars["arrow"]["left"],
     "%#Part8#" .. chars["blank"] .. getLineAndCol() .. chars["blank"],
   }
 
