@@ -6,35 +6,6 @@ local cmd = api.nvim_command
 local job = require("plenary.job")
 local utils = require("ricdotnet.utils")
 
-local colors = {
-  dark = "#1d2021",
-
-  light_0 = "#fbf1c7",
-  light_2 = "#d5c4a1",
-  light_4 = "#a89984",
-
-  blue_d = "#458588",
-  blue_l = "#83a598",
-
-  yellow_d = "#d79921",
-  yellow_l = "#fabd2f",
-
-  purple_d = "#b16286",
-  purple_l = "#d3869b",
-
-  red_d = "#cc241d",
-  red_l = "#fb4934",
-
-  green_d = "#98971a",
-  green_l = "#b8bb26",
-
-  orange_d = "#d65d0e",
-  orange_l = "#fe8019",
-
-  gray_d = "#3c3836",
-  gray_l = "#504945",
-}
-
 local chars = {
   blank = " ",
   arrow = { left = "", right = "" },
@@ -189,16 +160,11 @@ local function getWakaTimeStats()
   return chars["watch"] .. chars["blank"] .. wakatime .. chars["blank"]
 end
 
--- BUILD THE LINE --
-StatusLine = {}
+-- LINE BUILDER --
+local colors = require("ricdotnet.statusline.colors").colors
 
-StatusLine.active = function()
-  set.laststatus = 2
-
-  -- set bar colors
+if vim.g.colors_name == "gruvbox" then
   cmd("hi Reset guibg=" .. colors["gray_d"] .. " gui=bold")
-
-  -- separators
   cmd("hi ArrowThin guifg=" .. colors["dark"] .. " guibg=" .. colors["gray_d"])
   cmd("hi ArrowPurpleD guifg=" .. colors["purple_d"] .. " guibg=" .. colors["purple_l"])
   cmd("hi ArrowPurpleL guifg=" .. colors["purple_l"] .. " guibg=" .. colors["gray_d"])
@@ -216,8 +182,13 @@ StatusLine.active = function()
   cmd("hi Part8 guibg=" .. colors["blue_d"] .. " guifg=" .. colors["light_2"])
   cmd("hi Middle guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_4"])
   cmd("hi Inactive guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_4"])
+end
 
-  -- build the line
+StatusLine = {}
+
+StatusLine.active = function()
+  set.laststatus = 2
+
   local statusline = {
     "%#Part1#" .. chars["blank"] .. getMode() .. chars["blank"],
     "%#ArrowPurpleD#" .. chars["arrow"]["right"],
@@ -247,6 +218,8 @@ StatusLine.active = function()
 end
 
 function StatusLine.inactive()
+  set.laststatus = 2
+
   local statusline = {
     "%#Inactive#",
     chars["blank"] .. getFile() .. chars["blank"],
