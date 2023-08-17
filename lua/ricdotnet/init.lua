@@ -6,3 +6,5 @@ require("ricdotnet.theme")
 require("ricdotnet.statusline")
 require("ricdotnet.set")
 require("ricdotnet.keys")
+
+require('Comment').setup()

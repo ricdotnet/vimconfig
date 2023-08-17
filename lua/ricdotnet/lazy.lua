@@ -45,6 +45,7 @@ lazy.setup({
   { "lewis6991/gitsigns.nvim" },
   { "wakatime/vim-wakatime" },
   { "dense-analysis/ale" },
+  { "numToStr/Comment.nvim" },
 
   -- themes
   { "dasupradyumna/midnight.nvim" },
