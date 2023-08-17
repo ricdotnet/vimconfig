@@ -2,6 +2,9 @@ local map = vim.keymap.set
 
 vim.g.mapleader = "."
 
+--map("", "<D-c>", "\"+y")
+--map("", "<D-v>", "\"+p")
+
 --map("", "<Leader>b", ":b")
 map("", "<C-q>", ":bd<Enter>") -- close current filekeys
 
@@ -24,3 +27,6 @@ map("", "<Leader>ntt", ":tabnew term://zsh<Enter>a")         -- new terminal in 
 
 map("n", "gd", ":lua vim.lsp.buf.definition()<Enter>")       -- get a function definition
 map("n", "gtd", ":lua vim.lsp.buf.type_definition()<Enter>") -- get a type definition
+
+map("n", "<A-Up>", ":m .-2<Enter>")                          -- move down 1 line
+map("n", "<A-Down>", ":m .+1<Enter>")                        -- move up 1 line
