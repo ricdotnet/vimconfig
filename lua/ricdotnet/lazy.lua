@@ -52,5 +52,6 @@ lazy.setup({
   { "ellisonleao/gruvbox.nvim" },
   { "catppuccin/nvim" },
   { "navarasu/onedark.nvim" },
-  { "olimorris/onedarkpro.nvim", priority = 1000 },
+  { "olimorris/onedarkpro.nvim" },
+  { "marko-cerovac/material.nvim", priority = 1000 },
 })
