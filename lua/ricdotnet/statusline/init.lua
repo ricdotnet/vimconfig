@@ -184,7 +184,7 @@ if vim.g.colors_name == "gruvbox" then
   cmd("hi Inactive guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_4"])
 end
 
-if vim.g.colors_name == "onedark" then
+if string.match(vim.g.colors_name, ".*onedark.*") then
   local odc = require("onedark.colors")
 
   cmd("hi Reset guibg=" .. odc["bg2"] .. " gui=bold")

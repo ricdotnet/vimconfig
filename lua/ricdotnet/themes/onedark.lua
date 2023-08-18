@@ -1,8 +1,10 @@
 local cmd = vim.cmd
 
+require("onedarkpro").setup()
+
 require("onedark").setup {
-    style = "deep"
+  style = "deep"
 }
 require("onedark").load()
 
-cmd.colorscheme "onedark"
+cmd.colorscheme "onedark_dark"
