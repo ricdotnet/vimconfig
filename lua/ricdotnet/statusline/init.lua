@@ -1,266 +1,271 @@
-local set = vim.opt
-local api = vim.api
-local fn = vim.fn
-local cmd = api.nvim_command
+local Sl = {}
 
-local job = require("plenary.job")
-local utils = require("ricdotnet.utils")
+Sl.setup = function(opts)
+  local set = vim.opt
+  local api = vim.api
+  local fn = vim.fn
+  local cmd = api.nvim_command
 
-local chars = {
-  blank = " ",
-  arrow = { left = "", right = "" },
-  thin = { left = "", right = "" },
-  upstream = "  ",
-  directory = "  ",
-  watch = " 󰥔 ",
-  config = "  ",
-  git = {
-    added = "  ",
-    changed = "  ",
-    removed = "  ",
-  },
-}
+  local job = require("plenary.job")
+  local utils = require("ricdotnet.utils")
 
-local function getIcon(filename, filetype)
-  local icon = ""
+  local chars = {
+    blank = " ",
+    arrow = { left = "", right = "" },
+    thin = { left = "", right = "" },
+    upstream = "  ",
+    directory = "  ",
+    watch = " 󰥔 ",
+    config = "  ",
+    git = {
+      added = "  ",
+      changed = "  ",
+      removed = "  ",
+    },
+  }
 
-  local ok, devicons = pcall(require, "nvim-web-devicons")
+  local function getIcon(filename, filetype)
+    local icon = ""
 
-  if not ok then
+    local ok, devicons = pcall(require, "nvim-web-devicons")
+
+    if not ok then
+      return icon
+    end
+
+    local ft_icon = devicons.get_icon(filename, filetype)
+    icon = ft_icon or ""
+
     return icon
   end
 
-  local ft_icon = devicons.get_icon(filename, filetype)
-  icon = ft_icon or ""
+  local function getMode()
+    local mode = api.nvim_get_mode().mode
 
-  return icon
-end
+    local modes = {
+      v = "VISUAL",
+      n = "NORMAL",
+      i = "INSERT",
+      c = "COMMAND",
+      t = "TERMINAL",
+      R = "REPLACE MULTI",
+    }
 
-local function getMode()
-  local mode = api.nvim_get_mode().mode
-
-  local modes = {
-    v = "VISUAL",
-    n = "NORMAL",
-    i = "INSERT",
-    c = "COMMAND",
-    t = "TERMINAL",
-    R = "REPLACE MULTI",
-  }
-
-  return modes[mode] or mode
-end
-
-local function getFile()
-  local filename = fn.expand "%:t"
-  local icon = getIcon("default_icon")
-
-  if filename == nil or filename == "" then
-    return icon .. " "
+    return modes[mode] or mode
   end
 
-  return getIcon(filename) .. " " .. filename
-end
+  local function getFile()
+    local filename = fn.expand "%:t"
+    local icon = getIcon("default_icon")
 
-local function getProjectDir()
-  local projectDir = fn.fnamemodify(fn.getcwd(), ":t")
+    if filename == nil or filename == "" then
+      return icon .. " "
+    end
 
-  return getIcon("default_icon") .. " /" .. projectDir
-end
-
-local function getGitBranch()
-  if not vim.g.gitsigns_head then
-    return ""
+    return getIcon(filename) .. " " .. filename
   end
 
-  --return getIcon("github") .. chars["blank"] .. chars["upstream"] .. vim.b.gitsigns_head
-  return chars["upstream"] .. vim.g.gitsigns_head
-end
+  local function getProjectDir()
+    local projectDir = fn.fnamemodify(fn.getcwd(), ":t")
 
-local function getGitStats()
-  if utils.getPaneWidth() < 120 then
-    return ""
+    return getIcon("default_icon") .. " /" .. projectDir
   end
 
-  if not vim.b.gitsigns_head or not vim.g.gitsigns_head then
-    return ""
+  local function getGitBranch()
+    if not vim.g.gitsigns_head then
+      return ""
+    end
+
+    --return getIcon("github") .. chars["blank"] .. chars["upstream"] .. vim.b.gitsigns_head
+    return chars["upstream"] .. vim.g.gitsigns_head
   end
 
-  local git = vim.b.gitsigns_status_dict
+  local function getGitStats()
+    if utils.getPaneWidth() < 120 then
+      return ""
+    end
 
-  local added = (git.added and git.added ~= 0) and (chars["git"]["added"] .. git.added) or ""
-  local changed = (git.changed and git.changed ~= 0) and (chars["git"]["changed"] .. git.changed) or ""
-  local removed = (git.removed and git.removed ~= 0) and (chars["git"]["removed"] .. git.removed) or ""
+    if not vim.b.gitsigns_head or not vim.g.gitsigns_head then
+      return ""
+    end
 
-  if added == "" and changed == "" and removed == "" then
-    return ""
+    local git = vim.b.gitsigns_status_dict
+
+    local added = (git.added and git.added ~= 0) and (chars["git"]["added"] .. git.added .. " ") or ""
+    local changed = (git.changed and git.changed ~= 0) and (chars["git"]["changed"] .. git.changed .. " ") or ""
+    local removed = (git.removed and git.removed ~= 0) and (chars["git"]["removed"] .. git.removed .. " ") or ""
+
+    if added == "" and changed == "" and removed == "" then
+      return ""
+    end
+
+    return added .. changed .. removed .. chars["blank"]
   end
 
-  return added .. chars["blank"] .. changed .. chars["blank"] .. removed
-end
+  local function getCurrentLsp()
+    local lsps = vim.lsp.get_active_clients()
+    local lsp = ""
 
-local function getCurrentLsp()
-  local lsps = vim.lsp.get_active_clients()
-  local lsp = ""
+    if not lsps or lsps == nil then
+      return lsp
+    end
 
-  if not lsps or lsps == nil then
+    for _, client in pairs(lsps) do
+      if client.attached_buffers[api.nvim_get_current_buf()] and client.name ~= "null-ls" then
+        lsp = "   LSP ~ " .. client.name
+      end
+    end
+
     return lsp
   end
 
-  for _, client in pairs(lsps) do
-    if client.attached_buffers[api.nvim_get_current_buf()] and client.name ~= "null-ls" then
-      lsp = "   LSP " .. client.name
+  local function getLineAndCol()
+    local current_line = fn.line "."
+    local current_col = fn.col "."
+    local total_lines = fn.line "$"
+
+    local perc = math.modf((current_line * 100) / total_lines)
+    local text = "%%" .. perc
+
+    text = (current_line == 1 and "Top") or text
+    text = (current_line == total_lines and "Bot") or text
+
+    return current_line .. ":" .. current_col .. " - " .. text
+  end
+
+  local getWakaTimeStats = function() return "" end
+  if opts.wakatime == true then
+    -- TODO: refactor using timers from luv
+    local startTime = os.time()
+    local wakatime = ""
+
+    local function runWTJob()
+      job:new({
+        command = "wakatime-cli",
+        args = { "--today" },
+        on_exit = function(j, _)
+          wakatime = j:result()[1] or ""
+        end,
+      }):start()
+      startTime = os.time()
+    end
+    runWTJob() -- run once on start
+
+    getWakaTimeStats = function()
+      if utils.getPaneWidth() < 120 then
+        return ""
+      end
+
+      -- every 5 minutes
+      if os.time() - startTime >= (60 * 5) then
+        runWTJob()
+        startTime = os.time()
+      end
+
+      return chars["watch"] .. chars["blank"] .. wakatime .. chars["blank"]
     end
   end
 
-  return lsp
-end
+  local function getBufDiagnostics()
+    if api.nvim_buf_get_name(0) == "" or api.nvim_buf_get_name(0) == nil then return "" end
 
-local function getLineAndCol()
-  local current_line = fn.line "."
-  local current_col = fn.col "."
-  local total_lines = fn.line "$"
+    local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+    local warns = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+    local hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
+    local info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
 
-  local perc = math.modf((current_line * 100) / total_lines)
-  local text = "%%" .. perc
+    errors = (errors and errors > 0) and ("%#LspE#" .. " " .. errors .. chars["blank"]) or ""
+    warns = (warns and warns > 0) and ("%#LspW#" .. " " .. warns .. chars["blank"]) or ""
+    hints = (hints and hints > 0) and ("%#LspH#" .. "󰛩 " .. hints .. chars["blank"]) or ""
+    info = (info and info > 0) and ("%#LspI#" .. "󰋼 " .. info .. chars["blank"]) or ""
 
-  text = (current_line == 1 and "Top") or text
-  text = (current_line == total_lines and "Bot") or text
-
-  return current_line .. ":" .. current_col .. " - " .. text
-end
-
--- TODO: refactor using timers from luv
-local startTime = os.time()
-local wakatime = ""
-
-local function runWTJob()
-  job:new({
-    command = "wakatime-cli",
-    args = { "--today" },
-    on_exit = function(j, _)
-      wakatime = j:result()[1] or ""
-    end,
-  }):start()
-  startTime = os.time()
-end
-runWTJob() -- run once on start
-
-local function getWakaTimeStats()
-  if utils.getPaneWidth() < 120 then
-    return ""
+    return chars["blank"] .. errors .. warns .. hints .. info .. chars["blank"]
   end
 
-  -- every 5 minutes
-  if os.time() - startTime >= (60 * 5) then
-    runWTJob()
-    startTime = os.time()
+  -- LINE BUILDER --
+  local separator = opts.separator or "arrow"
+  local colorScheme = opts.theme or vim.g.colors_name
+  local colors = require("ricdotnet.statusline.colors")[colorScheme]
+
+  cmd("hi Reset guibg=" .. colors["reset"]["bg"] .. " gui=bold")
+  cmd("hi SepA guibg=" .. colors["sep"]["a"]["bg"] .. " guifg=" .. colors["sep"]["a"]["fg"])
+  cmd("hi SepB guibg=" .. colors["sep"]["b"]["bg"] .. " guifg=" .. colors["sep"]["b"]["fg"])
+  cmd("hi SepC guibg=" .. colors["sep"]["c"]["bg"] .. " guifg=" .. colors["sep"]["c"]["fg"])
+  cmd("hi SepD guibg=" .. colors["sep"]["d"]["bg"] .. " guifg=" .. colors["sep"]["d"]["fg"])
+  cmd("hi SepE guibg=" .. colors["sep"]["e"]["bg"] .. " guifg=" .. colors["sep"]["e"]["fg"])
+
+  cmd("hi LspE guibg=" .. colors["diagnostic"]["bg"] .. " guifg=" .. colors["diagnostic"]["error"])
+  cmd("hi LspW guibg=" .. colors["diagnostic"]["bg"] .. " guifg=" .. colors["diagnostic"]["warn"])
+  cmd("hi LspH guibg=" .. colors["diagnostic"]["bg"] .. " guifg=" .. colors["diagnostic"]["hint"])
+  cmd("hi LspI guibg=" .. colors["diagnostic"]["bg"] .. " guifg=" .. colors["diagnostic"]["info"])
+
+  -- parts
+  cmd("hi PartA guibg=" .. colors["a"]["bg"] .. " guifg=" .. colors["a"]["fg"])
+  cmd("hi PartB guibg=" .. colors["b"]["bg"] .. " guifg=" .. colors["b"]["fg"])
+  cmd("hi PartC guibg=" .. colors["c"]["bg"] .. " guifg=" .. colors["c"]["fg"])
+  cmd("hi PartD guibg=" .. colors["d"]["bg"] .. " guifg=" .. colors["d"]["fg"])
+  cmd("hi PartE guibg=" .. colors["e"]["bg"] .. " guifg=" .. colors["e"]["fg"])
+  cmd("hi PartF guibg=" .. colors["f"]["bg"] .. " guifg=" .. colors["f"]["fg"])
+  cmd("hi PartG guibg=" .. colors["g"]["bg"] .. " guifg=" .. colors["g"]["fg"])
+  cmd("hi PartH guibg=" .. colors["h"]["bg"] .. " guifg=" .. colors["h"]["fg"])
+  cmd("hi PartI guibg=" .. colors["i"]["bg"] .. " guifg=" .. colors["i"]["fg"])
+  cmd("hi Inactive guibg=" .. colors["inactive"]["bg"] .. " guifg=" .. colors["inactive"]["fg"])
+
+  function Active()
+    set.laststatus = 2
+
+    local statusline = {
+      "%#PartA#" .. chars["blank"] .. getMode() .. chars["blank"],
+      "%#SepA#" .. chars[separator]["right"],
+      "%#PartB#" .. chars["blank"] .. getFile() .. chars["blank"],
+      "%#SepB#" .. chars[separator]["right"],
+      "%#PartC#" .. chars["blank"] .. getGitBranch() .. chars["blank"],
+      "%#SepC#" .. chars["thin"]["right"],
+      "%#PartD#" .. chars["blank"] .. getGitStats(),
+      "%#SepC#" .. chars["thin"]["right"],
+
+      "%#PartE#",
+      -- right side
+      "%=",
+
+      getWakaTimeStats(),
+      "%#SepC#" .. chars["thin"]["left"],
+      "%#PartF#" .. chars["blank"] ..  getBufDiagnostics(),
+      "%#SepC#" .. chars["thin"]["left"],
+      "%#PartG#" .. chars["blank"] .. getCurrentLsp() .. chars["blank"],
+      "%#SepD#" .. chars[separator]["left"],
+      "%#PartH#" .. chars["blank"] .. getProjectDir() .. chars["blank"],
+      "%#SepE#" .. chars[separator]["left"],
+      "%#PartI#" .. chars["blank"] .. getLineAndCol() .. chars["blank"],
+    }
+
+    return table.concat(statusline)
   end
 
-  return chars["watch"] .. chars["blank"] .. wakatime .. chars["blank"]
-end
+  function Inactive()
+    set.laststatus = 2
 
--- LINE BUILDER --
-local colors = require("ricdotnet.statusline.colors").colors
+    local statusline = {
+      "%#Inactive#",
+      chars["blank"] .. getFile() .. chars["blank"],
+      chars["thin"]["right"] .. chars["blank"],
+      getGitStats() .. chars["blank"],
+      chars["thin"]["right"],
+      "%=",
+      chars["blank"] .. chars["thin"]["left"] .. chars["blank"],
+      getProjectDir() .. chars["blank"],
+    }
 
-if vim.g.colors_name == "gruvbox" then
-  cmd("hi Reset guibg=" .. colors["gray_d"] .. " gui=bold")
-  cmd("hi ArrowThin guifg=" .. colors["dark"] .. " guibg=" .. colors["gray_d"])
-  cmd("hi ArrowPurpleD guifg=" .. colors["purple_d"] .. " guibg=" .. colors["purple_l"])
-  cmd("hi ArrowPurpleL guifg=" .. colors["purple_l"] .. " guibg=" .. colors["gray_d"])
-  cmd("hi ArrowBlueD guifg=" .. colors["blue_d"] .. " guibg=" .. colors["blue_l"])
-  cmd("hi ArrowBlueL guifg=" .. colors["blue_l"] .. " guibg=" .. colors["gray_d"])
+    return table.concat(statusline)
+  end
 
-  -- parts
-  cmd("hi Part1 guibg=" .. colors["purple_d"] .. " guifg=" .. colors["light_0"])
-  cmd("hi Part2 guibg=" .. colors["purple_l"] .. " guifg=" .. colors["dark"])
-  cmd("hi Part3 guibg=" .. colors["gray_d"] .. " guifg=" .. colors["purple_l"])
-  cmd("hi Part4 guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_2"])
-  cmd("hi Part5 guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_2"])
-  cmd("hi Part6 guibg=" .. colors["gray_d"] .. " guifg=" .. colors["blue_l"])
-  cmd("hi Part7 guibg=" .. colors["blue_l"] .. " guifg=" .. colors["dark"])
-  cmd("hi Part8 guibg=" .. colors["blue_d"] .. " guifg=" .. colors["light_2"])
-  cmd("hi Middle guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_4"])
-  cmd("hi Inactive guibg=" .. colors["gray_d"] .. " guifg=" .. colors["light_4"])
-end
-
-if string.match(vim.g.colors_name, ".*onedark.*") then
-  local odc = require("onedark.colors")
-
-  cmd("hi Reset guibg=" .. odc["bg2"] .. " gui=bold")
-  cmd("hi ArrowThin guifg=" .. odc["grey"] .. " guibg=" .. odc["bg2"])
-  cmd("hi ArrowLeftD guifg=" .. odc["green"] .. " guibg=" .. odc["grey"])
-  cmd("hi ArrowLeftL guifg=" .. odc["grey"] .. " guibg=" .. odc["bg2"])
-  cmd("hi ArrowRightD guifg=" .. odc["green"] .. " guibg=" .. odc["grey"])
-  cmd("hi ArrowRightL guifg=" .. odc["grey"] .. " guibg=" .. odc["bg2"])
-
-  -- parts
-  cmd("hi Part1 guibg=" .. odc["green"] .. " guifg=" .. odc["black"])
-  cmd("hi Part2 guibg=" .. odc["grey"] .. " guifg=" .. odc["fg"])
-  cmd("hi Part3 guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
-  cmd("hi Part4 guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
-  cmd("hi Part5 guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
-  cmd("hi Part6 guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
-  cmd("hi Part7 guibg=" .. odc["grey"] .. " guifg=" .. odc["fg"])
-  cmd("hi Part8 guibg=" .. odc["green"] .. " guifg=" .. odc["black"])
-  cmd("hi Middle guibg=" .. odc["bg2"] .. " guifg=" .. odc["fg"])
-  cmd("hi Inactive guibg=" .. odc["bg1"] .. " guifg=" .. odc["grey"])
-end
-
-StatusLine = {}
-
-StatusLine.active = function()
-  set.laststatus = 2
-
-  local statusline = {
-    "%#Part1#" .. chars["blank"] .. getMode() .. chars["blank"],
-    "%#ArrowLeftD#" .. chars["arrow"]["right"],
-    "%#Part2#" .. chars["blank"] .. getFile() .. chars["blank"],
-    "%#ArrowLeftL#" .. chars["arrow"]["right"],
-    "%#Part3#" .. chars["blank"] .. getGitBranch() .. chars["blank"],
-    "%#ArrowThin#" .. chars["thin"]["right"],
-    "%#Part4#" .. chars["blank"] .. getGitStats() .. chars["blank"],
-    "%#ArrowThin#" .. chars["thin"]["right"],
-
-    "%#Middle#",
-    -- right side
-    "%=",
-
-    getWakaTimeStats(),
-    "%#ArrowThin#" .. chars["thin"]["left"],
-    "%#Part5#" .. chars["blank"] .. "" .. chars["blank"],
-    "%#ArrowThin#" .. chars["thin"]["left"],
-    "%#Part6#" .. chars["blank"] .. getCurrentLsp() .. chars["blank"],
-    "%#ArrowRightL#" .. chars["arrow"]["left"],
-    "%#Part7#" .. chars["blank"] .. getProjectDir() .. chars["blank"],
-    "%#ArrowRightD#" .. chars["arrow"]["left"],
-    "%#Part8#" .. chars["blank"] .. getLineAndCol() .. chars["blank"],
-  }
-
-  return table.concat(statusline)
-end
-
-function StatusLine.inactive()
-  set.laststatus = 2
-
-  local statusline = {
-    "%#Inactive#",
-    chars["blank"] .. getFile() .. chars["blank"],
-    chars["thin"]["right"] .. chars["blank"],
-    getGitStats() .. chars["blank"],
-    chars["thin"]["right"],
-    "%=",
-    chars["blank"] .. chars["thin"]["left"] .. chars["blank"],
-    getProjectDir() .. chars["blank"],
-  }
-
-  return table.concat(statusline)
-end
-
-vim.api.nvim_exec([[
+  vim.api.nvim_exec([[
   augroup Statusline
     autocmd!
-    autocmd VimEnter,WinEnter,BufEnter * setlocal statusline=%!v:lua.StatusLine.active()
-    autocmd WinLeave,BufLeave * setlocal statusline=%{%v:lua.StatusLine.inactive()%}
+    autocmd VimEnter,WinEnter,BufEnter * setlocal statusline=%!v:lua.Active()
+    autocmd WinLeave,BufLeave * setlocal statusline=%{%v:lua.Inactive()%}
   augroup END
 ]], false)
+end
+
+return Sl
