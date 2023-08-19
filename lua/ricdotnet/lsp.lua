@@ -67,7 +67,7 @@ require("ricdotnet.ls.htmlls")(capabilities, on_attach)
 require("ricdotnet.ls.tsls")(capabilities, on_attach)
 require("ricdotnet.ls.luals")(capabilities, on_attach)
 
-local servers = { "cssls", "vuels", "jsonls", "gopls", "clangd" }
+local servers = { "cssls", "vuels", "jsonls", "gopls", "clangd", "pyright" }
 for _, server in pairs(servers) do
   require("lspconfig")[server].setup {
     on_attach = on_attach,

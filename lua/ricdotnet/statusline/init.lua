@@ -12,16 +12,23 @@ Sl.setup = function(opts)
   local chars = {
     blank = " ",
     arrow = { left = "", right = "" },
+    round = { left = "", right = "" },
     thin = { left = "", right = "" },
     upstream = "  ",
     directory = "  ",
-    watch = " 󰥔 ",
+    watch = " ",
     config = "  ",
     git = {
       added = "  ",
       changed = "  ",
       removed = "  ",
     },
+    diagnostics = {
+      error = " ",
+      warn = " ",
+      hint = " ",
+      info = " ",
+    }
   }
 
   local function getIcon(filename, filetype)
@@ -162,6 +169,8 @@ Sl.setup = function(opts)
         startTime = os.time()
       end
 
+      if wakatime == "" then return wakatime end
+
       return chars["watch"] .. chars["blank"] .. wakatime .. chars["blank"]
     end
   end
@@ -174,10 +183,10 @@ Sl.setup = function(opts)
     local hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
     local info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
 
-    errors = (errors and errors > 0) and ("%#LspE#" .. " " .. errors .. chars["blank"]) or ""
-    warns = (warns and warns > 0) and ("%#LspW#" .. " " .. warns .. chars["blank"]) or ""
-    hints = (hints and hints > 0) and ("%#LspH#" .. "󰛩 " .. hints .. chars["blank"]) or ""
-    info = (info and info > 0) and ("%#LspI#" .. "󰋼 " .. info .. chars["blank"]) or ""
+    errors = (errors and errors > 0) and ("%#LspE#" .. chars["diagnostics"]["error"] .. errors .. chars["blank"]) or ""
+    warns = (warns and warns > 0) and ("%#LspW#" .. chars["diagnostics"]["warn"] .. warns .. chars["blank"]) or ""
+    hints = (hints and hints > 0) and ("%#LspH#" .. chars["diagnostics"]["hint"] .. hints .. chars["blank"]) or ""
+    info = (info and info > 0) and ("%#LspI#" .. chars["diagnostics"]["info"] .. info .. chars["blank"]) or ""
 
     return chars["blank"] .. errors .. warns .. hints .. info .. chars["blank"]
   end
@@ -186,6 +195,12 @@ Sl.setup = function(opts)
   local separator = opts.separator or "arrow"
   local colorScheme = opts.theme or vim.g.colors_name
   local colors = require("ricdotnet.statusline.colors")[colorScheme]
+
+  if opts.colors then
+    for k, v in pairs(opts.colors) do
+      colors[k] = v
+    end
+  end
 
   cmd("hi Reset guibg=" .. colors["reset"]["bg"] .. " gui=bold")
   cmd("hi SepA guibg=" .. colors["sep"]["a"]["bg"] .. " guifg=" .. colors["sep"]["a"]["fg"])
@@ -230,7 +245,7 @@ Sl.setup = function(opts)
 
       getWakaTimeStats(),
       "%#SepC#" .. chars["thin"]["left"],
-      "%#PartF#" .. chars["blank"] ..  getBufDiagnostics(),
+      "%#PartF#" .. chars["blank"] .. getBufDiagnostics(),
       "%#SepC#" .. chars["thin"]["left"],
       "%#PartG#" .. chars["blank"] .. getCurrentLsp() .. chars["blank"],
       "%#SepD#" .. chars[separator]["left"],
