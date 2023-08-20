@@ -18,6 +18,7 @@ Sl.setup = function(opts)
     directory = "  ",
     watch = " ",
     config = "  ",
+    unsaved = "  ",
     git = {
       added = "  ",
       changed = "  ",
@@ -191,6 +192,13 @@ Sl.setup = function(opts)
     return chars["blank"] .. errors .. warns .. hints .. info .. chars["blank"]
   end
 
+  local function getIsUnsaved()
+    local buf = api.nvim_get_current_buf()
+    local unsaved = api.nvim_buf_get_option(buf, 'modified')
+
+    return (unsaved and chars["unsaved"]) or ""
+  end
+
   -- LINE BUILDER --
   local separator = opts.separator or "arrow"
   local colorScheme = opts.theme or vim.g.colors_name
@@ -238,8 +246,7 @@ Sl.setup = function(opts)
       "%#SepC#" .. chars["thin"]["right"],
       "%#PartD#" .. chars["blank"] .. getGitStats(),
       "%#SepC#" .. chars["thin"]["right"],
-
-      "%#PartE#",
+      "%#PartE#" .. chars["blank"] .. getIsUnsaved(),
       -- right side
       "%=",
 
@@ -266,6 +273,7 @@ Sl.setup = function(opts)
       chars["thin"]["right"] .. chars["blank"],
       getGitStats() .. chars["blank"],
       chars["thin"]["right"],
+      getIsUnsaved(),
       "%=",
       chars["blank"] .. chars["thin"]["left"] .. chars["blank"],
       getProjectDir() .. chars["blank"],
