@@ -6,8 +6,10 @@ require("ricdotnet.set")
 require("ricdotnet.keys")
 
 require("ricdotnet.theme")
-require("ricdotnet.statusline").setup {
+require("ricdotline").setup {
   wakatime = true,
+  theme = "gruvbox",
+  separator = "round",
 }
 
 require('Comment').setup()

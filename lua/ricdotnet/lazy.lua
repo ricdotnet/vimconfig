@@ -46,6 +46,7 @@ lazy.setup({
   { "wakatime/vim-wakatime" },
   { "dense-analysis/ale" },
   { "numToStr/Comment.nvim" },
+  { "ricdotnet/ricdotline" },
 
   -- themes
   { "dasupradyumna/midnight.nvim" },
