@@ -5,11 +5,13 @@ require("ricdotnet.icons")
 require("ricdotnet.set")
 require("ricdotnet.keys")
 
-require("ricdotnet.theme")
+require("ricdotnet.theme").setup("material")
 require("ricdotline").setup {
   wakatime = true,
-  theme = "gruvbox",
-  separator = "round",
+  theme = "material",
 }
 
-require('Comment').setup()
+require("Comment").setup()
+
+-- dev
+require("ricdotmarker").setup()
