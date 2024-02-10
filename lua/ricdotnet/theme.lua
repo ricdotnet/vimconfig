@@ -13,11 +13,6 @@ function T.setup(theme)
     return print("the theme needs to be a string")
   end
 
-  -- for _, t in ipairs(themes) do
-  --   pcall(require, themes[t])
-  --   is_valid_theme = true
-  --   break
-  -- end
   local ok, _ = pcall(require, themes[theme])
   if (not ok) then
     is_valid_theme = false

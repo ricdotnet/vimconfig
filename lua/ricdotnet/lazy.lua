@@ -23,9 +23,20 @@ function lazy.setup(plugins)
 end
 
 lazy.path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-lazy.opts = {}
+-- lazy.opts = {
+--   dev = {
+--     path = "~/Code/lua",
+--   },
+-- }
 
 lazy.setup({
+  -- dashboard
+  {
+    "goolord/alpha-nvim",
+    event = "VimEnter",
+    config = require("ricdotnet.alpha").config,
+  },
+
   { "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
   { "nvim-telescope/telescope.nvim" },
   { "nvim-lua/plenary.nvim" },
@@ -39,7 +50,10 @@ lazy.setup({
   { "L3MON4D3/LuaSnip" },
   { "rafamadriz/friendly-snippets" },
   { "ray-x/lsp_signature.nvim" },
-  { "windwp/nvim-autopairs",          event = "InsertEnter", opts = {} },
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+  },
   { "nvim-tree/nvim-web-devicons" },
   { "lepture/vim-jinja" },
   { "lewis6991/gitsigns.nvim" },
@@ -54,5 +68,11 @@ lazy.setup({
   { "catppuccin/nvim" },
   { "navarasu/onedark.nvim" },
   { "olimorris/onedarkpro.nvim" },
-  { "marko-cerovac/material.nvim", priority = 1000 },
+  {
+    "marko-cerovac/material.nvim",
+    priority = 1000,
+  },
+
+  -- dev plugins
+  -- { "ricdotmarker", dev = true },
 })

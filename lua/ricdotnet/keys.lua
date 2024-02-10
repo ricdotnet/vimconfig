@@ -18,7 +18,7 @@ map("n", "<Leader>gb", ":Telescope git_status<Enter>")           -- list of modi
 -- editor
 map("n", "<C-l>", ":lua vim.lsp.buf.format()<Enter>") -- format the current file
 map("n", "<C-k>", ":lua vim.lsp.buf.hover()<Enter>")  -- show function definition
-map("n", "<Leader>nt", ":tabnew")
+map("n", "<Leader>nt", ":tabnew<Enter>:Alpha<Enter>")
 map("n", "<Leader>tn", ":tabnext<Enter>")
 map("n", "<Leader>tp", ":tabprev<Enter>")
 map("n", "<Leader>ntt", ":tabnew term://zsh<Enter>a")        -- new terminal in a new tab
