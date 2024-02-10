@@ -18,4 +18,4 @@ require("ricdotline").setup({
 })
 
 -- dev
-require("ricdotmarker").setup()
+-- require("ricdotmarker").setup()
